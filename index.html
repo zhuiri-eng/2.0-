@@ -210,6 +210,188 @@
             transform: none;
         }
 
+        /* 支付弹窗样式 */
+        .payment-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .payment-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #0F1A3C 0%, #1a2a5e 100%);
+            border: 2px solid #D4AF37;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .payment-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .payment-header h2 {
+            color: #D4AF37;
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+
+        .payment-header p {
+            color: #FFFFF0;
+            font-size: 1.1em;
+        }
+
+        .payment-amount {
+            text-align: center;
+            margin: 25px 0;
+            padding: 20px;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 15px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .payment-amount .amount {
+            font-size: 2.5em;
+            color: #D4AF37;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .payment-amount .description {
+            color: #FFFFF0;
+            font-size: 1.1em;
+        }
+
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .payment-method {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .payment-method:hover {
+            border-color: #D4AF37;
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        .payment-method.selected {
+            border-color: #D4AF37;
+            background: rgba(212, 175, 55, 0.2);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .payment-method img {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 8px;
+        }
+
+        .payment-method div {
+            color: #FFFFF0;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .pay-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #D4AF37, #FFD700);
+            border: none;
+            border-radius: 12px;
+            color: #0F1A3C;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .pay-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .pay-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .close-payment {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: #FFFFF0;
+            font-size: 1.5em;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .close-payment:hover {
+            color: #D4AF37;
+        }
+
+        .payment-loading {
+            text-align: center;
+            padding: 20px;
+            color: #FFFFF0;
+        }
+
+        .payment-loading .spinner {
+            border: 3px solid rgba(212, 175, 55, 0.3);
+            border-top: 3px solid #D4AF37;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .payment-result {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .payment-result.success {
+            color: #4CAF50;
+        }
+
+        .payment-result.error {
+            color: #f44336;
+        }
+
         .result-section {
             background: rgba(255, 255, 255, 0.1);
             border-radius: 15px;
@@ -581,6 +763,51 @@
 
         <div class="error-message" id="errorMessage"></div>
 
+        <!-- 支付弹窗 -->
+        <div class="payment-modal" id="paymentModal">
+            <div class="payment-content">
+                <button class="close-payment" onclick="closePaymentModal()">×</button>
+                
+                <div class="payment-header">
+                    <h2>💳 支付确认</h2>
+                    <p>解锁完整命理测算报告</p>
+                </div>
+                
+                <div class="payment-amount">
+                    <div class="amount">¥29.9</div>
+                    <div class="description">专业命理测算服务</div>
+                </div>
+                
+                <div class="payment-methods">
+                    <div class="payment-method selected" data-method="alipay">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iOCIgZmlsbD0iIzAwQjJGRiIvPgo8cGF0aCBkPSJNMTIgMTJIMjhWMjBIMTJWMjJIMjZWMzBIMTJWMzJIMjRWMzRIMTJWMzZIMjJWMzhIMTJWMjBaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K" alt="支付宝">
+                        <div>支付宝</div>
+                    </div>
+                    <div class="payment-method" data-method="wechat">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iOCIgZmlsbD0iIzAwQzgwMCIvPgo8cGF0aCBkPSJNMTIgMTJIMjhWMjBIMTJWMjJIMjZWMzBIMTJWMzJIMjRWMzRIMTJWMzZIMjJWMzhIMTJWMjBaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K" alt="微信支付">
+                        <div>微信支付</div>
+                    </div>
+                    <div class="payment-method" data-method="qqpay">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iOCIgZmlsbD0iIzAwQjJGRiIvPgo8cGF0aCBkPSJNMTIgMTJIMjhWMjBIMTJWMjJIMjZWMzBIMTJWMzJIMjRWMzRIMTJWMzZIMjJWMzhIMTJWMjBaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K" alt="QQ钱包">
+                        <div>QQ钱包</div>
+                    </div>
+                    <div class="payment-method" data-method="unionpay">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iOCIgZmlsbD0iIzAwQjJGRiIvPgo8cGF0aCBkPSJNMTIgMTJIMjhWMjBIMTJWMjJIMjZWMzBIMTJWMzJIMjRWMzRIMTJWMzZIMjJWMzhIMTJWMjBaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K" alt="银联支付">
+                        <div>银联支付</div>
+                    </div>
+                </div>
+                
+                <button class="pay-btn" onclick="processPayment()">立即支付 ¥29.9</button>
+                
+                <div class="payment-loading" id="paymentLoading" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>正在创建支付订单...</p>
+                </div>
+                
+                <div class="payment-result" id="paymentResult" style="display: none;"></div>
+            </div>
+        </div>
+
         <div class="result-section" id="resultSection">
             <h2>📊 测算结果</h2>
             
@@ -712,8 +939,6 @@
 
         function startCalculation() {
             const form = document.getElementById('calculationForm');
-            const loading = document.getElementById('loading');
-            const resultSection = document.getElementById('resultSection');
             const errorMessage = document.getElementById('errorMessage');
             const calculateBtn = document.getElementById('calculateBtn');
 
@@ -740,21 +965,8 @@
             // 隐藏错误信息
             hideError();
 
-            // 显示加载状态
-            loading.classList.add('show');
-            resultSection.classList.remove('show');
-            calculateBtn.disabled = true;
-
-            // 模拟计算过程
-            setTimeout(() => {
-                generateResults();
-                loading.classList.remove('show');
-                resultSection.classList.add('show');
-                calculateBtn.disabled = false;
-                
-                // 滚动到结果区域
-                resultSection.scrollIntoView({ behavior: 'smooth' });
-            }, 2000);
+            // 显示支付弹窗
+            showPaymentModal();
         }
 
         function generateResults() {
@@ -1054,6 +1266,99 @@
             }
             
             document.body.removeChild(textArea);
+        }
+
+        // 支付相关函数
+        let selectedPaymentMethod = 'alipay';
+
+        // 显示支付弹窗
+        function showPaymentModal() {
+            const paymentModal = document.getElementById('paymentModal');
+            paymentModal.style.display = 'block';
+            
+            // 绑定支付方式选择事件
+            document.querySelectorAll('.payment-method').forEach(method => {
+                method.addEventListener('click', function() {
+                    document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedPaymentMethod = this.dataset.method;
+                });
+            });
+        }
+
+        // 关闭支付弹窗
+        function closePaymentModal() {
+            const paymentModal = document.getElementById('paymentModal');
+            paymentModal.style.display = 'none';
+        }
+
+        // 处理支付
+        function processPayment() {
+            const paymentLoading = document.getElementById('paymentLoading');
+            const paymentResult = document.getElementById('paymentResult');
+            const payBtn = document.querySelector('.pay-btn');
+
+            // 显示加载状态
+            paymentLoading.style.display = 'block';
+            paymentResult.style.display = 'none';
+            payBtn.disabled = true;
+
+            // 模拟支付过程
+            setTimeout(() => {
+                paymentLoading.style.display = 'none';
+                
+                // 模拟支付成功
+                const success = Math.random() > 0.3; // 70%成功率
+                
+                if (success) {
+                    paymentResult.innerHTML = `
+                        <div class="payment-result success">
+                            <h3>✅ 支付成功！</h3>
+                            <p>正在为您生成专业命理测算报告...</p>
+                        </div>
+                    `;
+                    paymentResult.style.display = 'block';
+                    
+                    // 2秒后关闭弹窗并显示结果
+                    setTimeout(() => {
+                        closePaymentModal();
+                        showCalculationResults();
+                    }, 2000);
+                } else {
+                    paymentResult.innerHTML = `
+                        <div class="payment-result error">
+                            <h3>❌ 支付失败</h3>
+                            <p>请检查支付方式或稍后重试</p>
+                            <button onclick="processPayment()" class="pay-btn" style="margin-top: 15px;">重新支付</button>
+                        </div>
+                    `;
+                    paymentResult.style.display = 'block';
+                    payBtn.disabled = false;
+                }
+            }, 2000);
+        }
+
+        // 显示测算结果
+        function showCalculationResults() {
+            const loading = document.getElementById('loading');
+            const resultSection = document.getElementById('resultSection');
+            const calculateBtn = document.getElementById('calculateBtn');
+
+            // 显示加载状态
+            loading.classList.add('show');
+            resultSection.classList.remove('show');
+            calculateBtn.disabled = true;
+
+            // 模拟计算过程
+            setTimeout(() => {
+                generateResults();
+                loading.classList.remove('show');
+                resultSection.classList.add('show');
+                calculateBtn.disabled = false;
+                
+                // 滚动到结果区域
+                resultSection.scrollIntoView({ behavior: 'smooth' });
+            }, 2000);
         }
 
         // 表单提交事件
