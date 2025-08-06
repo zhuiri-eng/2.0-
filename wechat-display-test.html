@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="format-detection" content="telephone=no, email=no, address=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>微信显示测试页面</title>
+    <style>
+        /* 重置样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* 基础样式 */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #0F1A3C 0%, #1a2a5e 100%);
+            background-attachment: fixed;
+            color: #FFFFF0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            line-height: 1.6;
+            word-wrap: break-word;
+            word-break: break-word;
+        }
+
+        /* 微信特殊兼容性修复 */
+        @supports (-webkit-touch-callout: none) {
+            body {
+                font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .test-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .test-section h2 {
+            color: #D4AF37;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+
+        .test-section h3 {
+            color: #D4AF37;
+            margin: 15px 0 10px 0;
+            font-size: 1.1em;
+        }
+
+        .test-item {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .test-button {
+            background: linear-gradient(45deg, #D4AF37, #FFD700);
+            color: #0F1A3C;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .test-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(212, 175, 55, 0.3);
+        }
+
+        .test-input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #D4AF37;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #FFFFF0;
+            font-size: 14px;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            margin: 5px 0;
+        }
+
+        .test-input:focus {
+            outline: none;
+            border-color: #FFFFF0;
+            box-shadow: 0 0 8px rgba(212, 175, 55, 0.5);
+        }
+
+        /* 复选框测试样式 */
+        .checkbox-test {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .checkbox-test input[type="checkbox"] {
+            -webkit-appearance: none !important;
+            -moz-appearance: none !important;
+            appearance: none !important;
+            width: 20px !important;
+            height: 20px !important;
+            border: 2px solid #D4AF37 !important;
+            border-radius: 4px !important;
+            background: transparent !important;
+            position: relative !important;
+            cursor: pointer !important;
+            display: inline-block !important;
+            vertical-align: middle !important;
+            z-index: 1000 !important;
+            pointer-events: auto !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+
+        .checkbox-test input[type="checkbox"]:checked {
+            background: #D4AF37 !important;
+            border-color: #D4AF37 !important;
+        }
+
+        .checkbox-test input[type="checkbox"]:checked::after {
+            content: '✓' !important;
+            position: absolute !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) !important;
+            color: #0F1A3C !important;
+            font-size: 14px !important;
+            font-weight: bold !important;
+        }
+
+        /* 单选按钮测试样式 */
+        .radio-test {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .radio-test input[type="radio"] {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #D4AF37;
+            border-radius: 50%;
+            background: transparent;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .radio-test input[type="radio"]:checked {
+            background: #D4AF37;
+            border-color: #D4AF37;
+        }
+
+        .radio-test input[type="radio"]:checked::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 6px;
+            height: 6px;
+            background: #0F1A3C;
+            border-radius: 50%;
+        }
+
+        /* 状态显示 */
+        .status {
+            margin: 10px 0;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            font-size: 12px;
+            color: #FFFFF0;
+        }
+
+        .status.success {
+            background: rgba(76, 175, 80, 0.2);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            color: #4CAF50;
+        }
+
+        .status.error {
+            background: rgba(244, 67, 54, 0.2);
+            border: 1px solid rgba(244, 67, 54, 0.3);
+            color: #F44336;
+        }
+
+        /* 移动端优化 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .test-section {
+                padding: 15px;
+            }
+            
+            .test-button {
+                padding: 8px 16px;
+                font-size: 13px;
+            }
+            
+            .checkbox-test input[type="checkbox"] {
+                width: 24px !important;
+                height: 24px !important;
+            }
+            
+            .radio-test input[type="radio"] {
+                width: 20px;
+                height: 20px;
+            }
+        }
+
+        /* 微信浏览器特殊处理 */
+        @media screen and (max-width: 414px) {
+            body {
+                font-size: 14px;
+            }
+            
+            .test-section h2 {
+                font-size: 1.2em;
+            }
+            
+            .test-section h3 {
+                font-size: 1em;
+            }
+        }
+
+        /* 调试信息 */
+        .debug-info {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="test-section">
+            <h2>🔧 微信显示兼容性测试</h2>
+            <p>此页面专门用于测试微信浏览器的显示兼容性问题</p>
+        </div>
+
+        <div class="test-section">
+            <h3>1. 基础显示测试</h3>
+            <div class="test-item">
+                <p><strong>字体显示：</strong>测试中文字体是否正常显示</p>
+                <p>这是测试文字：你好世界！Hello World! 123456</p>
+                <div class="status success">✅ 字体显示正常</div>
+            </div>
+            
+            <div class="test-item">
+                <p><strong>颜色显示：</strong>测试颜色是否正常显示</p>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <span style="color: #D4AF37;">金色文字</span>
+                    <span style="color: #FFB6C1;">粉色文字</span>
+                    <span style="color: #4CAF50;">绿色文字</span>
+                    <span style="color: #F44336;">红色文字</span>
+                </div>
+                <div class="status success">✅ 颜色显示正常</div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>2. 表单元素测试</h3>
+            
+            <div class="test-item">
+                <h4>文本输入框</h4>
+                <input type="text" class="test-input" placeholder="请输入测试文字">
+                <div class="status success">✅ 文本输入框正常</div>
+            </div>
+            
+            <div class="test-item">
+                <h4>复选框测试</h4>
+                <div class="checkbox-test">
+                    <input type="checkbox" id="testCheckbox1">
+                    <label for="testCheckbox1">测试复选框 1</label>
+                </div>
+                <div class="checkbox-test">
+                    <input type="checkbox" id="testCheckbox2">
+                    <label for="testCheckbox2">测试复选框 2</label>
+                </div>
+                <button class="test-button" onclick="testCheckboxes()">测试复选框功能</button>
+                <div class="status" id="checkboxStatus">等待测试...</div>
+            </div>
+            
+            <div class="test-item">
+                <h4>单选按钮测试</h4>
+                <div class="radio-test">
+                    <input type="radio" id="testRadio1" name="testRadio">
+                    <label for="testRadio1">选项 1</label>
+                </div>
+                <div class="radio-test">
+                    <input type="radio" id="testRadio2" name="testRadio">
+                    <label for="testRadio2">选项 2</label>
+                </div>
+                <button class="test-button" onclick="testRadios()">测试单选按钮功能</button>
+                <div class="status" id="radioStatus">等待测试...</div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>3. 布局测试</h3>
+            
+            <div class="test-item">
+                <h4>Flexbox 布局</h4>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0;">
+                    <div style="background: rgba(212, 175, 55, 0.3); padding: 10px; border-radius: 6px; flex: 1; min-width: 100px;">Flex 项目 1</div>
+                    <div style="background: rgba(212, 175, 55, 0.3); padding: 10px; border-radius: 6px; flex: 1; min-width: 100px;">Flex 项目 2</div>
+                    <div style="background: rgba(212, 175, 55, 0.3); padding: 10px; border-radius: 6px; flex: 1; min-width: 100px;">Flex 项目 3</div>
+                </div>
+                <div class="status success">✅ Flexbox 布局正常</div>
+            </div>
+            
+            <div class="test-item">
+                <h4>Grid 布局</h4>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin: 10px 0;">
+                    <div style="background: rgba(76, 175, 80, 0.3); padding: 10px; border-radius: 6px;">Grid 项目 1</div>
+                    <div style="background: rgba(76, 175, 80, 0.3); padding: 10px; border-radius: 6px;">Grid 项目 2</div>
+                    <div style="background: rgba(76, 175, 80, 0.3); padding: 10px; border-radius: 6px;">Grid 项目 3</div>
+                </div>
+                <div class="status success">✅ Grid 布局正常</div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>4. 动画效果测试</h3>
+            
+            <div class="test-item">
+                <h4>CSS 动画</h4>
+                <div id="animationTest" style="width: 50px; height: 50px; background: #D4AF37; border-radius: 50%; margin: 10px 0; animation: pulse 2s infinite;"></div>
+                <button class="test-button" onclick="toggleAnimation()">切换动画</button>
+                <div class="status success">✅ 动画效果正常</div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>5. 触摸事件测试</h3>
+            
+            <div class="test-item">
+                <h4>触摸响应</h4>
+                <div id="touchTest" style="background: rgba(212, 175, 55, 0.3); padding: 20px; border-radius: 8px; text-align: center; cursor: pointer;">
+                    点击或触摸此区域测试
+                </div>
+                <div class="status" id="touchStatus">等待触摸测试...</div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>6. 浏览器信息</h3>
+            <div class="debug-info" id="browserInfo">
+                正在获取浏览器信息...
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>7. 测试操作</h3>
+            <button class="test-button" onclick="runAllTests()">运行所有测试</button>
+            <button class="test-button" onclick="clearResults()">清除结果</button>
+            <button class="test-button" onclick="copyResults()">复制测试结果</button>
+        </div>
+    </div>
+
+    <style>
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+
+    <script>
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('微信显示测试页面加载完成');
+            
+            // 获取浏览器信息
+            getBrowserInfo();
+            
+            // 设置触摸测试
+            setupTouchTest();
+            
+            // 设置表单元素事件
+            setupFormElements();
+        });
+
+        function getBrowserInfo() {
+            const browserInfo = document.getElementById('browserInfo');
+            const info = {
+                userAgent: navigator.userAgent,
+                platform: navigator.platform,
+                language: navigator.language,
+                cookieEnabled: navigator.cookieEnabled,
+                onLine: navigator.onLine,
+                screenWidth: screen.width,
+                screenHeight: screen.height,
+                windowWidth: window.innerWidth,
+                windowHeight: window.innerHeight,
+                devicePixelRatio: window.devicePixelRatio,
+                viewportWidth: document.documentElement.clientWidth,
+                viewportHeight: document.documentElement.clientHeight
+            };
+            
+            let infoText = '浏览器信息：\n';
+            for (const [key, value] of Object.entries(info)) {
+                infoText += `${key}: ${value}\n`;
+            }
+            
+            browserInfo.textContent = infoText;
+        }
+
+        function setupTouchTest() {
+            const touchTest = document.getElementById('touchTest');
+            const touchStatus = document.getElementById('touchStatus');
+            
+            let touchCount = 0;
+            
+            touchTest.addEventListener('click', function(e) {
+                touchCount++;
+                touchStatus.textContent = `点击事件触发 ${touchCount} 次`;
+                touchStatus.className = 'status success';
+                console.log('点击事件触发');
+            });
+            
+            touchTest.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                touchCount++;
+                touchStatus.textContent = `触摸事件触发 ${touchCount} 次`;
+                touchStatus.className = 'status success';
+                console.log('触摸事件触发');
+            });
+        }
+
+        function setupFormElements() {
+            // 设置复选框事件
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.onclick = function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.checked = !this.checked;
+                    console.log('复选框点击:', this.id, '状态:', this.checked);
+                    return false;
+                };
+                
+                checkbox.ontouchstart = function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.checked = !this.checked;
+                    console.log('复选框触摸:', this.id, '状态:', this.checked);
+                    return false;
+                };
+            });
+            
+            // 设置单选按钮事件
+            const radios = document.querySelectorAll('input[type="radio"]');
+            radios.forEach(radio => {
+                radio.onclick = function(e) {
+                    e.preventDefault();
+                    const name = this.name;
+                    document.querySelectorAll(`input[name="${name}"]`).forEach(r => r.checked = false);
+                    this.checked = true;
+                    console.log('单选按钮点击:', this.id, '状态:', this.checked);
+                    return false;
+                };
+            });
+        }
+
+        function testCheckboxes() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            const status = document.getElementById('checkboxStatus');
+            
+            let allWorking = true;
+            checkboxes.forEach(checkbox => {
+                if (!checkbox.checked) {
+                    checkbox.checked = true;
+                    setTimeout(() => {
+                        checkbox.checked = false;
+                    }, 500);
+                }
+            });
+            
+            setTimeout(() => {
+                status.textContent = '✅ 复选框功能测试完成';
+                status.className = 'status success';
+            }, 1000);
+        }
+
+        function testRadios() {
+            const radios = document.querySelectorAll('input[type="radio"]');
+            const status = document.getElementById('radioStatus');
+            
+            let currentIndex = 0;
+            const testInterval = setInterval(() => {
+                radios.forEach((radio, index) => {
+                    radio.checked = index === currentIndex;
+                });
+                
+                currentIndex = (currentIndex + 1) % radios.length;
+                
+                if (currentIndex === 0) {
+                    clearInterval(testInterval);
+                    setTimeout(() => {
+                        status.textContent = '✅ 单选按钮功能测试完成';
+                        status.className = 'status success';
+                    }, 500);
+                }
+            }, 300);
+        }
+
+        function toggleAnimation() {
+            const animationTest = document.getElementById('animationTest');
+            if (animationTest.style.animationPlayState === 'paused') {
+                animationTest.style.animationPlayState = 'running';
+            } else {
+                animationTest.style.animationPlayState = 'paused';
+            }
+        }
+
+        function runAllTests() {
+            console.log('开始运行所有测试...');
+            
+            // 运行复选框测试
+            testCheckboxes();
+            
+            // 运行单选按钮测试
+            setTimeout(testRadios, 1500);
+            
+            // 更新状态
+            setTimeout(() => {
+                alert('所有测试完成！请检查各个测试项的状态。');
+            }, 3000);
+        }
+
+        function clearResults() {
+            const statusElements = document.querySelectorAll('.status');
+            statusElements.forEach(status => {
+                status.textContent = '等待测试...';
+                status.className = 'status';
+            });
+        }
+
+        function copyResults() {
+            const results = [];
+            
+            // 收集所有测试结果
+            const statusElements = document.querySelectorAll('.status');
+            statusElements.forEach(status => {
+                results.push(status.textContent);
+            });
+            
+            const resultsText = results.join('\n');
+            
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(resultsText).then(() => {
+                    alert('测试结果已复制到剪贴板！');
+                }).catch(() => {
+                    fallbackCopyTextToClipboard(resultsText);
+                });
+            } else {
+                fallbackCopyTextToClipboard(resultsText);
+            }
+        }
+
+        function fallbackCopyTextToClipboard(text) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
+                alert('测试结果已复制到剪贴板！');
+            } catch (err) {
+                console.error('复制失败:', err);
+                alert('复制失败，请手动选择文本复制');
+            }
+            
+            document.body.removeChild(textArea);
+        }
+    </script>
+</body>
+</html> 

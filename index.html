@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="format-detection" content="telephone=no, email=no, address=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>命理综合测算 - 专业易学平台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #0F1A3C 0%, #1a2a5e 100%);
+            background-attachment: fixed;
+            color: #FFFFF0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            line-height: 1.6;
+            word-wrap: break-word;
+            word-break: break-word;
+        }
+
+        /* 微信特殊兼容性修复 */
+        @supports (-webkit-touch-callout: none) {
+            body {
+                font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 0;
+        }
+
+        .header h1 {
+            font-size: clamp(1.8em, 5vw, 2.5em);
+            color: #D4AF37;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+            margin-bottom: 10px;
+            font-weight: bold;
+            line-height: 1.2;
+        }
+
+        .input-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .input-section h2 {
+            color: #D4AF37;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .input-group {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #D4AF37;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .input-group input, .input-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #D4AF37;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #FFFFF0;
+            font-size: 16px;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            font-family: inherit;
+        }
+
+        .input-group input:focus, .input-group textarea:focus {
+            outline: none;
+            border-color: #FFFFF0;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+
+        .gender-selector {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .gender-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .gender-option:hover {
+            background: rgba(212, 175, 55, 0.2);
+        }
+
+        .gender-option input[type="radio"] {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #D4AF37;
+            border-radius: 50%;
+            background: transparent;
+            position: relative;
+            cursor: pointer;
+            margin: 0;
+        }
+
+        .gender-option input[type="radio"]:checked {
+            background: #D4AF37;
+            border-color: #D4AF37;
+        }
+
+        .gender-option input[type="radio"]:checked::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px;
+            height: 8px;
+            background: #0F1A3C;
+            border-radius: 50%;
+        }
+
+        .calculate-btn {
+            background: linear-gradient(45deg, #D4AF37, #FFD700);
+            color: #0F1A3C;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            max-width: 300px;
+            margin: 20px auto;
+            display: block;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+        }
+
+        .calculate-btn:active {
+            transform: translateY(0);
+        }
+
+        .calculate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: none;
+        }
+
+        .result-section.show {
+            display: block;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .five-elements {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .element-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .element-name {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .element-percentage {
+            font-size: 24px;
+            font-weight: bold;
+            color: #D4AF37;
+        }
+
+        .report-section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 4px solid #D4AF37;
+        }
+
+        .report-section h3 {
+            color: #D4AF37;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .report-section p {
+            line-height: 1.8;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .disclaimer {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #FFB6C1;
+        }
+
+        .share-section {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .share-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+
+        .share-btn:hover {
+            background: #45a049;
+        }
+
+        /* 微信特殊兼容性样式 */
+        @media screen and (-webkit-min-device-pixel-ratio: 0) {
+            .input-group input, .input-group textarea {
+                -webkit-appearance: none;
+                border-radius: 8px;
+            }
+        }
+
+        /* 移动端优化 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .input-section {
+                padding: 15px;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .input-group {
+                min-width: auto;
+            }
+            
+            .gender-selector {
+                justify-content: center;
+            }
+            
+            .five-elements {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .calculate-btn {
+                padding: 12px 20px;
+                font-size: 16px;
+            }
+        }
+
+        /* 微信浏览器特殊处理 */
+        @media screen and (max-width: 414px) {
+            body {
+                font-size: 14px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .input-section h2 {
+                font-size: 1.3em;
+            }
+            
+            .element-percentage {
+                font-size: 20px;
+            }
+        }
+
+        /* 复选框样式修复 */
+        input[type="checkbox"] {
+            -webkit-appearance: none !important;
+            -moz-appearance: none !important;
+            appearance: none !important;
+            width: 20px !important;
+            height: 20px !important;
+            border: 2px solid #D4AF37 !important;
+            border-radius: 4px !important;
+            background: transparent !important;
+            position: relative !important;
+            cursor: pointer !important;
+            margin-right: 10px !important;
+            display: inline-block !important;
+            vertical-align: middle !important;
+            z-index: 1000 !important;
+            pointer-events: auto !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+
+        input[type="checkbox"]:checked {
+            background: #D4AF37 !important;
+            border-color: #D4AF37 !important;
+        }
+
+        input[type="checkbox"]:checked::after {
+            content: '✓' !important;
+            position: absolute !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) !important;
+            color: #0F1A3C !important;
+            font-size: 14px !important;
+            font-weight: bold !important;
+        }
+
+        /* 确保隐私协议复选框特别明显 */
+        #privacyAgreement {
+            opacity: 1 !important;
+            visibility: visible !important;
+            display: inline-block !important;
+            min-width: 20px !important;
+            min-height: 20px !important;
+            z-index: 1000 !important;
+            pointer-events: auto !important;
+        }
+
+        /* 确保隐私协议区域可以正常点击 */
+        .privacy-agreement {
+            position: relative !important;
+            z-index: 999 !important;
+            pointer-events: auto !important;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .privacy-agreement label {
+            pointer-events: auto !important;
+            cursor: pointer !important;
+            user-select: none !important;
+            -webkit-user-select: none !important;
+            -moz-user-select: none !important;
+            -ms-user-select: none !important;
+            display: flex !important;
+            align-items: flex-start !important;
+            gap: 10px !important;
+            line-height: 1.5 !important;
+        }
+
+        .privacy-agreement a {
+            color: #D4AF37 !important;
+            text-decoration: underline !important;
+        }
+
+        .privacy-agreement small {
+            color: #FFB6C1 !important;
+            font-size: 12px !important;
+            display: block !important;
+            margin-top: 5px !important;
+        }
+
+        /* 添加触摸友好的样式 */
+        @media (max-width: 768px) {
+            input[type="checkbox"] {
+                width: 24px !important;
+                height: 24px !important;
+                margin-right: 12px !important;
+            }
+            
+            input[type="checkbox"]:checked::after {
+                font-size: 16px !important;
+            }
+        }
+
+        /* 加载动画 */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(212, 175, 55, 0.3);
+            border-top: 4px solid #D4AF37;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 错误提示 */
+        .error-message {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            color: #FFB6C1;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌟 命理综合测算</h1>
+            <p>专业易学平台 · 八字 · 星座 · 塔罗</p>
+        </div>
+
+        <div class="input-section">
+            <h2>📝 个人信息</h2>
+            <form id="calculationForm">
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="name">姓名 *</label>
+                        <input type="text" id="name" name="name" required placeholder="请输入您的姓名">
+                    </div>
+                    <div class="input-group">
+                        <label>性别</label>
+                        <div class="gender-selector">
+                            <div class="gender-option">
+                                <input type="radio" id="male" name="gender" value="男">
+                                <label for="male">男</label>
+                            </div>
+                            <div class="gender-option">
+                                <input type="radio" id="female" name="gender" value="女">
+                                <label for="female">女</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="birthDate">出生日期 *</label>
+                        <input type="date" id="birthDate" name="birthDate" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="birthTime">出生时间</label>
+                        <input type="time" id="birthTime" name="birthTime">
+                    </div>
+                </div>
+
+                <div class="privacy-agreement">
+                    <label for="privacyAgreement">
+                        <input type="checkbox" id="privacyAgreement" required>
+                        <span>
+                            <strong>我已阅读并同意</strong><br>
+                            <a href="#" onclick="alert('隐私协议内容：\n\n1. 我们承诺保护您的个人信息安全\n2. 所有数据仅用于命理测算\n3. 不会向第三方泄露您的信息\n4. 您可以随时要求删除数据\n\n感谢您的信任！')">《隐私协议》</a>
+                            和
+                            <a href="#" onclick="alert('服务条款内容：\n\n1. 本平台仅供娱乐参考\n2. 测算结果不构成专业建议\n3. 请理性对待测算结果\n4. 平台保留服务调整权利\n\n祝您使用愉快！')">《服务条款》</a>
+                            <br><small>* 必须勾选才能继续</small>
+                        </span>
+                    </label>
+                </div>
+
+                <button type="submit" class="calculate-btn" id="calculateBtn">
+                    🔮 开始测算
+                </button>
+            </form>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>正在为您测算，请稍候...</p>
+        </div>
+
+        <div class="error-message" id="errorMessage"></div>
+
+        <div class="result-section" id="resultSection">
+            <h2>📊 测算结果</h2>
+            
+            <div class="five-elements" id="fiveElements">
+                <!-- 五行百分比将在这里显示 -->
+            </div>
+
+            <div class="report-section">
+                <h3>🎯 综合解析</h3>
+                <div id="comprehensiveReport">
+                    <!-- 综合报告将在这里显示 -->
+                </div>
+            </div>
+
+            <div class="report-section">
+                <h3>🌟 八字分析</h3>
+                <div id="baziReport">
+                    <!-- 八字报告将在这里显示 -->
+                </div>
+            </div>
+
+            <div class="report-section">
+                <h3>⭐ 星座运势</h3>
+                <div id="astrologyReport">
+                    <!-- 星座报告将在这里显示 -->
+                </div>
+            </div>
+
+            <div class="report-section">
+                <h3>🔮 塔罗指引</h3>
+                <div id="tarotReport">
+                    <!-- 塔罗报告将在这里显示 -->
+                </div>
+            </div>
+
+            <div class="disclaimer">
+                <strong>⚠️ 重要声明：</strong><br>
+                本测算结果仅供娱乐参考，不构成任何专业建议。命理测算是一种传统文化形式，请理性对待，不要过分依赖。如有重要决策，请咨询相关专业人士。
+            </div>
+
+            <div class="share-section">
+                <button class="share-btn" onclick="shareResults()">📤 分享结果</button>
+                <button class="share-btn" onclick="copyResults()">📋 复制结果</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('页面加载完成，开始初始化...');
+            
+            // 设置当前日期为默认值
+            const today = new Date();
+            const dateString = today.toISOString().split('T')[0];
+            const birthDateInput = document.getElementById('birthDate');
+            if (birthDateInput) {
+                birthDateInput.value = dateString;
+            }
+
+            // 为单选按钮添加点击事件
+            const radioButtons = document.querySelectorAll('input[type="radio"]');
+            radioButtons.forEach(radio => {
+                radio.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    // 取消同组其他选项
+                    const name = this.name;
+                    document.querySelectorAll(`input[name="${name}"]`).forEach(r => r.checked = false);
+                    // 选中当前选项
+                    this.checked = true;
+                    console.log('单选按钮点击:', this.id, '状态:', this.checked);
+                });
+            });
+
+            // 为复选框添加点击事件 - 简化版本
+            function setupCheckboxHandlers() {
+                const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                checkboxes.forEach(checkbox => {
+                    // 移除所有现有事件监听器
+                    checkbox.replaceWith(checkbox.cloneNode(true));
+                });
+                
+                // 重新获取复选框并添加事件监听器
+                const newCheckboxes = document.querySelectorAll('input[type="checkbox"]');
+                newCheckboxes.forEach(checkbox => {
+                    // 使用最简单的方法：直接点击切换
+                    checkbox.onclick = function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        this.checked = !this.checked;
+                        console.log('复选框点击:', this.id, '状态:', this.checked);
+                        return false;
+                    };
+                    
+                    // 添加触摸事件
+                    checkbox.ontouchstart = function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        this.checked = !this.checked;
+                        console.log('复选框触摸:', this.id, '状态:', this.checked);
+                        return false;
+                    };
+                });
+                
+                // 为隐私协议标签添加点击事件
+                const privacyLabel = document.querySelector('label[for="privacyAgreement"]');
+                if (privacyLabel) {
+                    privacyLabel.onclick = function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const checkbox = document.getElementById('privacyAgreement');
+                        if (checkbox) {
+                            checkbox.checked = !checkbox.checked;
+                            console.log('隐私协议标签点击，复选框状态:', checkbox.checked);
+                        }
+                        return false;
+                    };
+                }
+            }
+            
+            // 立即设置
+            setupCheckboxHandlers();
+            
+            // 延迟再次设置，确保DOM完全加载
+            setTimeout(setupCheckboxHandlers, 100);
+            setTimeout(setupCheckboxHandlers, 500);
+            setTimeout(setupCheckboxHandlers, 1000);
+        });
+
+        function startCalculation() {
+            const form = document.getElementById('calculationForm');
+            const loading = document.getElementById('loading');
+            const resultSection = document.getElementById('resultSection');
+            const errorMessage = document.getElementById('errorMessage');
+            const calculateBtn = document.getElementById('calculateBtn');
+
+            // 验证表单
+            const name = document.getElementById('name').value.trim();
+            const birthDate = document.getElementById('birthDate').value;
+            const privacyAgreement = document.getElementById('privacyAgreement').checked;
+
+            if (!name) {
+                showError('请输入姓名');
+                return;
+            }
+
+            if (!birthDate) {
+                showError('请选择出生日期');
+                return;
+            }
+
+            if (!privacyAgreement) {
+                showError('请先同意隐私协议和服务条款');
+                return;
+            }
+
+            // 隐藏错误信息
+            hideError();
+
+            // 显示加载状态
+            loading.classList.add('show');
+            resultSection.classList.remove('show');
+            calculateBtn.disabled = true;
+
+            // 模拟计算过程
+            setTimeout(() => {
+                generateResults();
+                loading.classList.remove('show');
+                resultSection.classList.add('show');
+                calculateBtn.disabled = false;
+                
+                // 滚动到结果区域
+                resultSection.scrollIntoView({ behavior: 'smooth' });
+            }, 2000);
+        }
+
+        function generateResults() {
+            const name = document.getElementById('name').value.trim();
+            const gender = document.querySelector('input[name="gender"]:checked')?.value || '未知';
+            const birthDate = document.getElementById('birthDate').value;
+            const birthTime = document.getElementById('birthTime').value;
+
+            // 生成五行百分比
+            const elements = {
+                '金': Math.floor(Math.random() * 30) + 10,
+                '木': Math.floor(Math.random() * 30) + 10,
+                '水': Math.floor(Math.random() * 30) + 10,
+                '火': Math.floor(Math.random() * 30) + 10,
+                '土': Math.floor(Math.random() * 30) + 10
+            };
+
+            // 调整总和为100%
+            const total = Object.values(elements).reduce((sum, val) => sum + val, 0);
+            Object.keys(elements).forEach(key => {
+                elements[key] = Math.round((elements[key] / total) * 100);
+            });
+
+            // 显示五行百分比
+            const fiveElementsDiv = document.getElementById('fiveElements');
+            fiveElementsDiv.innerHTML = '';
+            Object.entries(elements).forEach(([element, percentage]) => {
+                const elementDiv = document.createElement('div');
+                elementDiv.className = 'element-item';
+                elementDiv.innerHTML = `
+                    <div class="element-name">${element}</div>
+                    <div class="element-percentage">${percentage}%</div>
+                `;
+                fiveElementsDiv.appendChild(elementDiv);
+            });
+
+            // 生成综合报告
+            const comprehensiveReport = generateComprehensiveReport(name, gender, elements);
+            document.getElementById('comprehensiveReport').innerHTML = comprehensiveReport;
+
+            // 生成八字报告
+            const baziReport = generateBaziReport(name, birthDate, birthTime);
+            document.getElementById('baziReport').innerHTML = baziReport;
+
+            // 生成星座报告
+            const astrologyReport = generateAstrologyReport(birthDate);
+            document.getElementById('astrologyReport').innerHTML = astrologyReport;
+
+            // 生成塔罗报告
+            const tarotReport = generateTarotReport();
+            document.getElementById('tarotReport').innerHTML = tarotReport;
+        }
+
+        function generateComprehensiveReport(name, gender, elements) {
+            const dominantElement = Object.entries(elements).reduce((a, b) => a[1] > b[1] ? a : b)[0];
+            const maxPercentage = elements[dominantElement];
+
+            let personality = '';
+            let career = '';
+            let health = '';
+            let relationship = '';
+
+            switch (dominantElement) {
+                case '金':
+                    personality = '您具有金的特质，性格坚毅果断，做事雷厉风行，有很强的领导能力和执行力。';
+                    career = '适合从事金融、法律、管理、IT技术等行业，能够成为优秀的决策者和执行者。';
+                    health = '需要注意肺部健康，建议多进行户外运动，保持呼吸系统通畅。';
+                    relationship = '在感情中比较理性，重视承诺和忠诚，是值得信赖的伴侣。';
+                    break;
+                case '木':
+                    personality = '您具有木的特质，性格温和善良，富有同情心，具有很强的创造力和想象力。';
+                    career = '适合从事教育、医疗、艺术、设计等行业，能够发挥创造力和人文关怀。';
+                    health = '需要注意肝胆健康，建议保持规律作息，避免过度劳累。';
+                    relationship = '在感情中比较感性，重视精神层面的交流，是温柔体贴的伴侣。';
+                    break;
+                case '水':
+                    personality = '您具有水的特质，性格灵活多变，适应能力强，具有很强的智慧和洞察力。';
+                    career = '适合从事贸易、运输、旅游、咨询等行业，能够灵活应对各种挑战。';
+                    health = '需要注意肾脏健康，建议多喝水，保持充足的水分摄入。';
+                    relationship = '在感情中比较灵活，善于沟通，能够理解伴侣的需求。';
+                    break;
+                case '火':
+                    personality = '您具有火的特质，性格热情开朗，充满活力，具有很强的表达能力和感染力。';
+                    career = '适合从事销售、媒体、娱乐、餐饮等行业，能够发挥个人魅力和影响力。';
+                    health = '需要注意心脏健康，建议控制情绪，保持心态平和。';
+                    relationship = '在感情中比较热情，重视激情和浪漫，是充满活力的伴侣。';
+                    break;
+                case '土':
+                    personality = '您具有土的特质，性格稳重踏实，责任心强，具有很强的组织能力和协调能力。';
+                    career = '适合从事房地产、建筑、农业、制造业等行业，能够建立稳定的事业基础。';
+                    health = '需要注意脾胃健康，建议规律饮食，避免暴饮暴食。';
+                    relationship = '在感情中比较稳重，重视家庭和稳定，是可靠的伴侣。';
+                    break;
+            }
+
+            return `
+                <p><strong>${name}</strong>，根据您的五行分析，您的主要特质如下：</p>
+                <p>${personality}</p>
+                <p><strong>事业发展：</strong>${career}</p>
+                <p><strong>健康建议：</strong>${health}</p>
+                <p><strong>感情特质：</strong>${relationship}</p>
+                <p>您的五行中${dominantElement}元素占比最高（${maxPercentage}%），这决定了您的主要性格特征和人生走向。建议您在生活中充分发挥这一优势，同时注意平衡其他元素的发展。</p>
+            `;
+        }
+
+        function generateBaziReport(name, birthDate, birthTime) {
+            const date = new Date(birthDate);
+            const year = date.getFullYear();
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+
+            // 简化的八字计算
+            const heavenlyStems = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
+            const earthlyBranches = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
+
+            const yearStem = heavenlyStems[(year - 4) % 10];
+            const yearBranch = earthlyBranches[(year - 4) % 12];
+            const monthStem = heavenlyStems[(month + 2) % 10];
+            const monthBranch = earthlyBranches[month % 12];
+            const dayStem = heavenlyStems[day % 10];
+            const dayBranch = earthlyBranches[day % 12];
+
+            return `
+                <p><strong>八字：</strong>${yearStem}${yearBranch}年 ${monthStem}${monthBranch}月 ${dayStem}${dayBranch}日</p>
+                <p>您的八字显示您是一个具有${yearStem}年特质的人，${yearStem}年出生的人通常具有以下特点：</p>
+                <p>• 性格特点：根据天干地支的组合，您具有独特的性格特征</p>
+                <p>• 事业运势：在${monthStem}月出生，有利于在相关领域发展</p>
+                <p>• 财运分析：${dayStem}日出生，财运方面需要特别注意时机把握</p>
+                <p>• 健康提醒：建议关注与您八字相关的健康方面</p>
+            `;
+        }
+
+        function generateAstrologyReport(birthDate) {
+            const date = new Date(birthDate);
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+
+            let zodiacSign = '';
+            let traits = '';
+
+            if ((month === 3 && day >= 21) || (month === 4 && day <= 19)) {
+                zodiacSign = '白羊座';
+                traits = '勇敢、热情、冲动、领导力强';
+            } else if ((month === 4 && day >= 20) || (month === 5 && day <= 20)) {
+                zodiacSign = '金牛座';
+                traits = '稳重、务实、固执、享受生活';
+            } else if ((month === 5 && day >= 21) || (month === 6 && day <= 20)) {
+                zodiacSign = '双子座';
+                traits = '聪明、好奇、善变、沟通能力强';
+            } else if ((month === 6 && day >= 21) || (month === 7 && day <= 22)) {
+                zodiacSign = '巨蟹座';
+                traits = '敏感、家庭观念强、保护欲强、情绪化';
+            } else if ((month === 7 && day >= 23) || (month === 8 && day <= 22)) {
+                zodiacSign = '狮子座';
+                traits = '自信、慷慨、骄傲、领导力强';
+            } else if ((month === 8 && day >= 23) || (month === 9 && day <= 22)) {
+                zodiacSign = '处女座';
+                traits = '完美主义、细心、实用、分析能力强';
+            } else if ((month === 9 && day >= 23) || (month === 10 && day <= 22)) {
+                zodiacSign = '天秤座';
+                traits = '平衡、公正、优雅、社交能力强';
+            } else if ((month === 10 && day >= 23) || (month === 11 && day <= 21)) {
+                zodiacSign = '天蝎座';
+                traits = '神秘、洞察力强、执着、控制欲强';
+            } else if ((month === 11 && day >= 22) || (month === 12 && day <= 21)) {
+                zodiacSign = '射手座';
+                traits = '乐观、自由、冒险、哲学思维';
+            } else if ((month === 12 && day >= 22) || (month === 1 && day <= 19)) {
+                zodiacSign = '摩羯座';
+                traits = '野心、责任感、实际、耐心';
+            } else if ((month === 1 && day >= 20) || (month === 2 && day <= 18)) {
+                zodiacSign = '水瓶座';
+                traits = '独立、创新、人道主义、叛逆';
+            } else {
+                zodiacSign = '双鱼座';
+                traits = '同情心、艺术天赋、直觉、逃避现实';
+            }
+
+            return `
+                <p><strong>星座：</strong>${zodiacSign}</p>
+                <p>作为${zodiacSign}，您具有以下特质：${traits}</p>
+                <p><strong>近期运势：</strong></p>
+                <p>• 事业运：近期在事业上会有新的机遇，建议保持开放心态</p>
+                <p>• 感情运：感情方面需要更多的沟通和理解</p>
+                <p>• 财运：财运稳定，但需要谨慎投资</p>
+                <p>• 健康运：注意保持规律作息，适当运动</p>
+                <p><strong>幸运数字：</strong>${Math.floor(Math.random() * 9) + 1}, ${Math.floor(Math.random() * 9) + 1}</p>
+                <p><strong>幸运颜色：</strong>${['红色', '蓝色', '绿色', '黄色', '紫色', '橙色'][Math.floor(Math.random() * 6)]}</p>
+            `;
+        }
+
+        function generateTarotReport() {
+            const cards = [
+                '愚者', '魔术师', '女祭司', '女皇', '皇帝', '教皇', '恋人', '战车',
+                '力量', '隐者', '命运之轮', '正义', '倒吊人', '死神', '节制', '恶魔',
+                '塔', '星星', '月亮', '太阳', '审判', '世界'
+            ];
+
+            const selectedCards = [];
+            for (let i = 0; i < 3; i++) {
+                const randomIndex = Math.floor(Math.random() * cards.length);
+                selectedCards.push(cards[randomIndex]);
+            }
+
+            const interpretations = {
+                '愚者': '代表新的开始和冒险精神，建议您保持开放心态，勇敢面对未知',
+                '魔术师': '象征创造力和技能，您有能力实现目标，关键是要相信自己',
+                '女祭司': '代表直觉和智慧，建议您多倾听内心的声音，相信直觉',
+                '女皇': '象征丰收和母性，您正处于收获的季节，享受生活的美好',
+                '皇帝': '代表权威和领导力，您有很强的控制欲，要学会适度放手',
+                '教皇': '象征传统和信仰，建议您遵循内心的道德准则',
+                '恋人': '代表选择和和谐，在重要决定上要听从内心的选择',
+                '战车': '象征胜利和意志力，您有很强的执行力，坚持就能成功',
+                '力量': '代表内在力量和勇气，您比想象中更强大',
+                '隐者': '象征内省和智慧，建议您独处思考，寻找内心的答案',
+                '命运之轮': '代表变化和机遇，生活正在发生积极的变化',
+                '正义': '象征平衡和公正，您的决定将带来公平的结果',
+                '倒吊人': '代表牺牲和新的视角，换个角度看问题会有新发现',
+                '死神': '象征结束和新生，旧的结束意味着新的开始',
+                '节制': '代表平衡和适度，建议您保持生活的平衡',
+                '恶魔': '象征欲望和束缚，要警惕物质欲望的束缚',
+                '塔': '代表突变和觉醒，突如其来的变化会带来新的认识',
+                '星星': '象征希望和灵感，保持希望，光明就在前方',
+                '月亮': '代表直觉和潜意识，注意梦境和直觉的提示',
+                '太阳': '象征快乐和成功，您正走向光明和成功',
+                '审判': '代表重生和救赎，过去的努力将得到回报',
+                '世界': '象征完成和圆满，您即将完成一个重要的人生阶段'
+            };
+
+            return `
+                <p><strong>塔罗牌阵：</strong>过去-现在-未来</p>
+                <p><strong>过去：</strong>${selectedCards[0]} - ${interpretations[selectedCards[0]]}</p>
+                <p><strong>现在：</strong>${selectedCards[1]} - ${interpretations[selectedCards[1]]}</p>
+                <p><strong>未来：</strong>${selectedCards[2]} - ${interpretations[selectedCards[2]]}</p>
+                <p><strong>整体解读：</strong>这三张牌的组合显示您的人生正在经历重要的转变。过去的经历为您积累了宝贵的经验，现在您需要运用这些经验来面对当前的挑战，而未来则充满了希望和可能性。</p>
+            `;
+        }
+
+        function showError(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = message;
+            errorMessage.classList.add('show');
+            
+            // 3秒后自动隐藏
+            setTimeout(() => {
+                hideError();
+            }, 3000);
+        }
+
+        function hideError() {
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.classList.remove('show');
+        }
+
+        function shareResults() {
+            if (navigator.share) {
+                navigator.share({
+                    title: '我的命理测算结果',
+                    text: '来看看我的命理测算结果吧！',
+                    url: window.location.href
+                }).catch(console.error);
+            } else {
+                // 降级处理
+                copyResults();
+                alert('结果已复制到剪贴板，您可以粘贴分享给朋友！');
+            }
+        }
+
+        function copyResults() {
+            const resultSection = document.getElementById('resultSection');
+            const text = resultSection.innerText;
+            
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('结果已复制到剪贴板！');
+                }).catch(() => {
+                    fallbackCopyTextToClipboard(text);
+                });
+            } else {
+                fallbackCopyTextToClipboard(text);
+            }
+        }
+
+        function fallbackCopyTextToClipboard(text) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
+                alert('结果已复制到剪贴板！');
+            } catch (err) {
+                console.error('复制失败:', err);
+                alert('复制失败，请手动选择文本复制');
+            }
+            
+            document.body.removeChild(textArea);
+        }
+
+        // 表单提交事件
+        document.getElementById('calculationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            startCalculation();
+        });
+    </script>
+</body>
+</html> 

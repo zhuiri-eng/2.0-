@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>功能测试 - 玄机命理</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>玄机命理 - 功能测试页面</h1>
+    
+    <div class="test-section">
+        <h2>HTML元素检查</h2>
+        <div id="elementTest"></div>
+        <button onclick="testElements()">检查HTML元素</button>
+    </div>
+
+    <div class="test-section">
+        <h2>JavaScript功能测试</h2>
+        <div id="functionTest"></div>
+        <button onclick="testFunctions()">测试JavaScript函数</button>
+    </div>
+
+    <div class="test-section">
+        <h2>响应式设计测试</h2>
+        <div id="responsiveTest"></div>
+        <button onclick="testResponsive()">测试响应式设计</button>
+    </div>
+
+    <div class="test-section">
+        <h2>分享功能测试</h2>
+        <div id="shareTest"></div>
+        <button onclick="testShare()">测试分享功能</button>
+    </div>
+
+    <script>
+        function testElements() {
+            const results = [];
+            const testDiv = document.getElementById('elementTest');
+            
+            // 检查输入字段
+            const requiredElements = [
+                'userName', 'birthDateTime', 'birthPlace', 'tarotQuestion', 
+                'privacyAgreement', 'startCalculation'
+            ];
+            
+            requiredElements.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    results.push(`<div class="test-result success">✓ ${id} 元素存在</div>`);
+                } else {
+                    results.push(`<div class="test-result error">✗ ${id} 元素缺失</div>`);
+                }
+            });
+            
+            // 检查性别选择器
+            const genderInputs = document.querySelectorAll('input[name="gender"]');
+            if (genderInputs.length >= 2) {
+                results.push(`<div class="test-result success">✓ 性别选择器存在 (${genderInputs.length} 个选项)</div>`);
+            } else {
+                results.push(`<div class="test-result error">✗ 性别选择器缺失或选项不足</div>`);
+            }
+            
+            // 检查五行百分比显示
+            const elementPercentages = ['woodText', 'fireText', 'earthText', 'metalText', 'waterText'];
+            elementPercentages.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    results.push(`<div class="test-result success">✓ ${id} 五行百分比元素存在</div>`);
+                } else {
+                    results.push(`<div class="test-result error">✗ ${id} 五行百分比元素缺失</div>`);
+                }
+            });
+            
+            // 检查用户信息显示
+            const userInfoElements = ['displayUserName', 'displayGender', 'displayBirthTime', 'displayBirthPlace'];
+            userInfoElements.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    results.push(`<div class="test-result success">✓ ${id} 用户信息显示元素存在</div>`);
+                } else {
+                    results.push(`<div class="test-result error">✗ ${id} 用户信息显示元素缺失</div>`);
+                }
+            });
+            
+            // 检查五行描述元素
+            const elementDescs = ['woodDesc', 'fireDesc', 'earthDesc', 'metalDesc', 'waterDesc'];
+            elementDescs.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    results.push(`<div class="test-result success">✓ ${id} 五行描述元素存在</div>`);
+                } else {
+                    results.push(`<div class="test-result error">✗ ${id} 五行描述元素缺失</div>`);
+                }
+            });
+            
+            testDiv.innerHTML = results.join('');
+        }
+
+        function testFunctions() {
+            const results = [];
+            const testDiv = document.getElementById('functionTest');
+            
+            // 检查全局函数是否存在
+            const requiredFunctions = [
+                'startComprehensiveCalculation', 'displayUserInfo', 
+                'calculateFiveElementPercentages', 'displayFiveElementPercentages',
+                'generateElementsSummary', 'shareResult', 'copyToClipboard',
+                'downloadReport', 'closeShareModal'
+            ];
+            
+            requiredFunctions.forEach(funcName => {
+                if (typeof window[funcName] === 'function') {
+                    results.push(`<div class="test-result success">✓ ${funcName} 函数存在</div>`);
+                } else {
+                    results.push(`<div class="test-result error">✗ ${funcName} 函数缺失</div>`);
+                }
+            });
+            
+            // 检查全局变量
+            const requiredVariables = ['heavenlyStems', 'earthlyBranches', 'fiveElements', 'tarotCards'];
+            requiredVariables.forEach(varName => {
+                if (window[varName]) {
+                    results.push(`<div class="test-result success">✓ ${varName} 变量存在</div>`);
+                } else {
+                    results.push(`<div class="test-result error">✗ ${varName} 变量缺失</div>`);
+                }
+            });
+            
+            testDiv.innerHTML = results.join('');
+        }
+
+        function testResponsive() {
+            const results = [];
+            const testDiv = document.getElementById('responsiveTest');
+            
+            // 检查视口设置
+            const viewport = document.querySelector('meta[name="viewport"]');
+            if (viewport) {
+                results.push(`<div class="test-result success">✓ 视口设置存在: ${viewport.content}</div>`);
+            } else {
+                results.push(`<div class="test-result error">✗ 视口设置缺失</div>`);
+            }
+            
+            // 检查屏幕尺寸
+            const screenWidth = window.innerWidth;
+            const screenHeight = window.innerHeight;
+            results.push(`<div class="test-result warning">⚠ 当前屏幕尺寸: ${screenWidth}x${screenHeight}</div>`);
+            
+            // 检查CSS媒体查询支持
+            if (window.matchMedia) {
+                const mobileQuery = window.matchMedia('(max-width: 768px)');
+                const desktopQuery = window.matchMedia('(min-width: 769px)');
+                
+                if (mobileQuery.matches) {
+                    results.push(`<div class="test-result warning">⚠ 当前为移动端视图 (≤768px)</div>`);
+                } else if (desktopQuery.matches) {
+                    results.push(`<div class="test-result warning">⚠ 当前为桌面端视图 (>768px)</div>`);
+                }
+            } else {
+                results.push(`<div class="test-result error">✗ 不支持媒体查询检测</div>`);
+            }
+            
+            testDiv.innerHTML = results.join('');
+        }
+
+        function testShare() {
+            const results = [];
+            const testDiv = document.getElementById('shareTest');
+            
+            // 检查原生分享API
+            if (navigator.share) {
+                results.push(`<div class="test-result success">✓ 支持原生分享API</div>`);
+            } else {
+                results.push(`<div class="test-result warning">⚠ 不支持原生分享API，将使用备用方案</div>`);
+            }
+            
+            // 检查剪贴板API
+            if (navigator.clipboard) {
+                results.push(`<div class="test-result success">✓ 支持剪贴板API</div>`);
+            } else {
+                results.push(`<div class="test-result warning">⚠ 不支持剪贴板API，将使用备用方案</div>`);
+            }
+            
+            // 检查文件下载支持
+            if (window.URL && window.URL.createObjectURL) {
+                results.push(`<div class="test-result success">✓ 支持文件下载功能</div>`);
+            } else {
+                results.push(`<div class="test-result error">✗ 不支持文件下载功能</div>`);
+            }
+            
+            // 检查隐私协议和服务条款链接
+            const privacyLink = document.querySelector('a[href="privacy.html"]');
+            const termsLink = document.querySelector('a[href="terms.html"]');
+            
+            if (privacyLink) {
+                results.push(`<div class="test-result success">✓ 隐私协议链接存在</div>`);
+            } else {
+                results.push(`<div class="test-result error">✗ 隐私协议链接缺失</div>`);
+            }
+            
+            if (termsLink) {
+                results.push(`<div class="test-result success">✓ 服务条款链接存在</div>`);
+            } else {
+                results.push(`<div class="test-result error">✗ 服务条款链接缺失</div>`);
+            }
+            
+            testDiv.innerHTML = results.join('');
+        }
+
+        // 页面加载时自动运行所有测试
+        window.addEventListener('load', function() {
+            testElements();
+            testFunctions();
+            testResponsive();
+            testShare();
+        });
+    </script>
+</body>
+</html> 

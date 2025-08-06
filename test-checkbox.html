@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>复选框测试</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #0F1A3C 0%, #1a2a5e 100%);
+            color: #FFFFF0;
+            padding: 20px;
+        }
+        
+        .test-container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+        }
+        
+        .privacy-agreement {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .privacy-agreement input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin: 0;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .privacy-agreement label {
+            flex: 1;
+            line-height: 1.5;
+            cursor: pointer;
+        }
+        
+        input[type="checkbox"] {
+            -webkit-appearance: none !important;
+            -moz-appearance: none !important;
+            appearance: none !important;
+            width: 18px !important;
+            height: 18px !important;
+            border: 2px solid #D4AF37 !important;
+            border-radius: 3px !important;
+            background: transparent !important;
+            position: relative !important;
+            cursor: pointer !important;
+            margin-right: 8px !important;
+            display: inline-block !important;
+            vertical-align: middle !important;
+        }
+
+        input[type="checkbox"]:checked {
+            background: #D4AF37 !important;
+            border-color: #D4AF37 !important;
+        }
+
+        input[type="checkbox"]:checked::after {
+            content: '✓' !important;
+            position: absolute !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) !important;
+            color: #0F1A3C !important;
+            font-size: 12px !important;
+            font-weight: bold !important;
+        }
+
+        #privacyAgreement {
+            opacity: 1 !important;
+            visibility: visible !important;
+            display: inline-block !important;
+            min-width: 18px !important;
+            min-height: 18px !important;
+        }
+        
+        .test-btn {
+            background: linear-gradient(45deg, #D4AF37, #FFD700);
+            border: none;
+            border-radius: 25px;
+            color: #0F1A3C;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+        }
+        
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 10px;
+            border-left: 4px solid #D4AF37;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h2>复选框显示测试</h2>
+        
+        <div class="privacy-agreement">
+            <input type="checkbox" id="privacyAgreement" required>
+            <label for="privacyAgreement">
+                <strong>我已阅读并同意</strong><br>
+                <a href="#" onclick="alert('隐私协议')">《隐私协议》</a>
+                和
+                <a href="#" onclick="alert('服务条款')">《服务条款》</a>
+                <br><small style="color: #D4AF37; font-size: 12px;">* 必须勾选才能继续</small>
+            </label>
+        </div>
+        
+        <button class="test-btn" onclick="testCheckbox()">测试复选框</button>
+        
+        <div class="result" id="result" style="display: none;">
+            <h3>测试结果：</h3>
+            <p id="resultText"></p>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 为复选框添加点击事件
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('click', function() {
+                    this.checked = !this.checked;
+                    console.log('复选框状态:', this.checked);
+                });
+            });
+        });
+        
+        function testCheckbox() {
+            const checkbox = document.getElementById('privacyAgreement');
+            const isVisible = checkbox.offsetWidth > 0 && checkbox.offsetHeight > 0;
+            const isChecked = checkbox.checked;
+            
+            document.getElementById('resultText').innerHTML = `
+                <strong>复选框可见性：</strong>${isVisible ? '是' : '否'}<br>
+                <strong>复选框选中状态：</strong>${isChecked ? '已选中' : '未选中'}<br>
+                <strong>元素宽度：</strong>${checkbox.offsetWidth}px<br>
+                <strong>元素高度：</strong>${checkbox.offsetHeight}px<br>
+                <strong>显示样式：</strong>${window.getComputedStyle(checkbox).display}<br>
+                <strong>可见性：</strong>${window.getComputedStyle(checkbox).visibility}
+            `;
+            document.getElementById('result').style.display = 'block';
+        }
+    </script>
+</body>
+</html> 

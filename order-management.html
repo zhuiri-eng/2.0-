@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>订单管理系统 - Payma支付</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #0F1A3C 0%, #1a2a5e 100%);
+            color: #FFFFF0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #D4AF37;
+            margin-bottom: 10px;
+        }
+
+        .stats-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(212, 175, 55, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #D4AF37;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #FFFFF0;
+            font-size: 0.9em;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .refresh-btn {
+            background: linear-gradient(45deg, #D4AF37, #FFD700);
+            border: none;
+            border-radius: 25px;
+            color: #0F1A3C;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .filter-group select {
+            padding: 8px 12px;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #FFFFF0;
+        }
+
+        .orders-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .orders-table th,
+        .orders-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .orders-table th {
+            background: rgba(212, 175, 55, 0.2);
+            color: #D4AF37;
+            font-weight: bold;
+        }
+
+        .orders-table tr:hover {
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .status-pending {
+            background: rgba(255, 193, 7, 0.2);
+            color: #FFC107;
+        }
+
+        .status-paid {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+        }
+
+        .status-failed {
+            background: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            border: 3px solid rgba(212, 175, 55, 0.3);
+            border-top: 3px solid #D4AF37;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #888;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 10px;
+            color: #D4AF37;
+        }
+
+        .action-btn {
+            background: rgba(212, 175, 55, 0.2);
+            border: 1px solid rgba(212, 175, 55, 0.5);
+            border-radius: 5px;
+            color: #D4AF37;
+            padding: 4px 8px;
+            font-size: 12px;
+            cursor: pointer;
+            margin-right: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background: rgba(212, 175, 55, 0.3);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background: rgba(15, 26, 60, 0.95);
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .close {
+            color: #D4AF37;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #FFFFF0;
+        }
+
+        .order-detail {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .detail-label {
+            color: #D4AF37;
+            font-weight: bold;
+        }
+
+        .detail-value {
+            color: #FFFFF0;
+        }
+
+        @media (max-width: 768px) {
+            .orders-table {
+                font-size: 12px;
+            }
+            
+            .orders-table th,
+            .orders-table td {
+                padding: 8px 6px;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .filter-group {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 订单管理系统</h1>
+            <p>实时监控和管理支付订单</p>
+        </div>
+
+        <!-- 统计面板 -->
+        <div class="stats-panel">
+            <div class="stat-card">
+                <div class="stat-number" id="totalOrders">0</div>
+                <div class="stat-label">总订单数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="pendingOrders">0</div>
+                <div class="stat-label">待支付</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="paidOrders">0</div>
+                <div class="stat-label">已支付</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalAmount">¥0.00</div>
+                <div class="stat-label">总金额</div>
+            </div>
+        </div>
+
+        <!-- 控制面板 -->
+        <div class="controls">
+            <div class="filter-group">
+                <label>状态筛选:</label>
+                <select id="statusFilter" onchange="filterOrders()">
+                    <option value="">全部状态</option>
+                    <option value="pending">待支付</option>
+                    <option value="paid">已支付</option>
+                    <option value="failed">支付失败</option>
+                </select>
+            </div>
+            <button class="refresh-btn" onclick="loadOrders()">
+                🔄 刷新订单
+            </button>
+        </div>
+
+        <!-- 订单表格 -->
+        <div id="ordersContainer">
+            <table class="orders-table" id="ordersTable">
+                <thead>
+                    <tr>
+                        <th>订单号</th>
+                        <th>商品名称</th>
+                        <th>金额</th>
+                        <th>状态</th>
+                        <th>创建时间</th>
+                        <th>支付时间</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="ordersTableBody">
+                    <!-- 订单数据将在这里动态加载 -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 加载状态 -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>正在加载订单数据...</p>
+        </div>
+
+        <!-- 空状态 -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <h3>📭 暂无订单</h3>
+            <p>还没有创建任何支付订单</p>
+        </div>
+    </div>
+
+    <!-- 订单详情模态框 -->
+    <div id="orderModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📋 订单详情</h3>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <div id="orderDetailContent">
+                <!-- 订单详情将在这里显示 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allOrders = [];
+        let filteredOrders = [];
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadOrders();
+            // 每30秒自动刷新一次
+            setInterval(loadOrders, 30000);
+        });
+
+        // 加载订单数据
+        async function loadOrders() {
+            showLoading(true);
+            
+            try {
+                const response = await fetch('http://localhost:3000/api/orders');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    allOrders = result.data || [];
+                    filteredOrders = [...allOrders];
+                    updateStats();
+                    renderOrders();
+                } else {
+                    throw new Error(result.message || '加载失败');
+                }
+            } catch (error) {
+                console.error('加载订单失败:', error);
+                // 如果API不可用，显示模拟数据
+                allOrders = generateMockOrders();
+                filteredOrders = [...allOrders];
+                updateStats();
+                renderOrders();
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // 生成模拟订单数据
+        function generateMockOrders() {
+            const mockOrders = [];
+            const statuses = ['pending', 'paid', 'failed'];
+            const names = ['测试商品A', '测试商品B', '测试商品C', 'VIP会员', '高级服务'];
+            
+            for (let i = 0; i < 10; i++) {
+                const status = statuses[Math.floor(Math.random() * statuses.length)];
+                const createTime = new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000);
+                const payTime = status === 'paid' ? new Date(createTime.getTime() + Math.random() * 60 * 60 * 1000) : null;
+                
+                mockOrders.push({
+                    orderId: `ORDER${Date.now()}${i}`,
+                    status: status,
+                    amount: (Math.random() * 100 + 1).toFixed(2),
+                    name: names[Math.floor(Math.random() * names.length)],
+                    createTime: createTime,
+                    payTime: payTime,
+                    tradeNo: status === 'paid' ? `PAY${Date.now()}${i}` : null
+                });
+            }
+            
+            return mockOrders;
+        }
+
+        // 更新统计信息
+        function updateStats() {
+            const totalOrders = allOrders.length;
+            const pendingOrders = allOrders.filter(order => order.status === 'pending').length;
+            const paidOrders = allOrders.filter(order => order.status === 'paid').length;
+            const totalAmount = allOrders
+                .filter(order => order.status === 'paid')
+                .reduce((sum, order) => sum + parseFloat(order.amount), 0)
+                .toFixed(2);
+
+            document.getElementById('totalOrders').textContent = totalOrders;
+            document.getElementById('pendingOrders').textContent = pendingOrders;
+            document.getElementById('paidOrders').textContent = paidOrders;
+            document.getElementById('totalAmount').textContent = `¥${totalAmount}`;
+        }
+
+        // 渲染订单表格
+        function renderOrders() {
+            const tbody = document.getElementById('ordersTableBody');
+            const emptyState = document.getElementById('emptyState');
+            const ordersTable = document.getElementById('ordersTable');
+
+            if (filteredOrders.length === 0) {
+                tbody.innerHTML = '';
+                ordersTable.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            ordersTable.style.display = 'table';
+            emptyState.style.display = 'none';
+
+            tbody.innerHTML = filteredOrders.map(order => `
+                <tr>
+                    <td>${order.orderId}</td>
+                    <td>${order.name}</td>
+                    <td>¥${order.amount}</td>
+                    <td>
+                        <span class="status-badge status-${order.status}">
+                            ${getStatusText(order.status)}
+                        </span>
+                    </td>
+                    <td>${formatDate(order.createTime)}</td>
+                    <td>${order.payTime ? formatDate(order.payTime) : '-'}</td>
+                    <td>
+                        <button class="action-btn" onclick="viewOrderDetail('${order.orderId}')">
+                            👁️ 查看
+                        </button>
+                        ${order.status === 'pending' ? `
+                            <button class="action-btn" onclick="checkOrderStatus('${order.orderId}')">
+                                🔄 检查
+                            </button>
+                        ` : ''}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // 筛选订单
+        function filterOrders() {
+            const statusFilter = document.getElementById('statusFilter').value;
+            
+            if (!statusFilter) {
+                filteredOrders = [...allOrders];
+            } else {
+                filteredOrders = allOrders.filter(order => order.status === statusFilter);
+            }
+            
+            renderOrders();
+        }
+
+        // 查看订单详情
+        function viewOrderDetail(orderId) {
+            const order = allOrders.find(o => o.orderId === orderId);
+            if (!order) return;
+
+            const modal = document.getElementById('orderModal');
+            const content = document.getElementById('orderDetailContent');
+
+            content.innerHTML = `
+                <div class="order-detail">
+                    <div class="detail-row">
+                        <span class="detail-label">订单号:</span>
+                        <span class="detail-value">${order.orderId}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">商品名称:</span>
+                        <span class="detail-value">${order.name}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">支付金额:</span>
+                        <span class="detail-value">¥${order.amount}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">订单状态:</span>
+                        <span class="detail-value">
+                            <span class="status-badge status-${order.status}">
+                                ${getStatusText(order.status)}
+                            </span>
+                        </span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">创建时间:</span>
+                        <span class="detail-value">${formatDate(order.createTime)}</span>
+                    </div>
+                    ${order.payTime ? `
+                        <div class="detail-row">
+                            <span class="detail-label">支付时间:</span>
+                            <span class="detail-value">${formatDate(order.payTime)}</span>
+                        </div>
+                    ` : ''}
+                    ${order.tradeNo ? `
+                        <div class="detail-row">
+                            <span class="detail-label">交易号:</span>
+                            <span class="detail-value">${order.tradeNo}</span>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+
+            modal.style.display = 'block';
+        }
+
+        // 关闭模态框
+        function closeModal() {
+            document.getElementById('orderModal').style.display = 'none';
+        }
+
+        // 检查订单状态
+        async function checkOrderStatus(orderId) {
+            try {
+                const response = await fetch(`http://localhost:3000/api/order-status/${orderId}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    // 更新本地订单数据
+                    const orderIndex = allOrders.findIndex(o => o.orderId === orderId);
+                    if (orderIndex !== -1) {
+                        allOrders[orderIndex] = { ...allOrders[orderIndex], ...result.data };
+                        filteredOrders = [...allOrders];
+                        updateStats();
+                        renderOrders();
+                    }
+                    
+                    alert(`订单状态: ${getStatusText(result.data.status)}`);
+                } else {
+                    alert('检查订单状态失败: ' + result.message);
+                }
+            } catch (error) {
+                console.error('检查订单状态失败:', error);
+                alert('检查订单状态失败，请稍后重试');
+            }
+        }
+
+        // 获取状态文本
+        function getStatusText(status) {
+            const statusMap = {
+                'pending': '待支付',
+                'paid': '已支付',
+                'failed': '支付失败'
+            };
+            return statusMap[status] || status;
+        }
+
+        // 格式化日期
+        function formatDate(date) {
+            if (!date) return '-';
+            const d = new Date(date);
+            return d.toLocaleString('zh-CN');
+        }
+
+        // 显示/隐藏加载状态
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+
+        // 点击模态框外部关闭
+        window.onclick = function(event) {
+            const modal = document.getElementById('orderModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html> 

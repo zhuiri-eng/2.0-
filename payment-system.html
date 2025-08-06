@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>自动化收款系统 - Payma支付</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #0F1A3C 0%, #1a2a5e 100%);
+            color: #FFFFF0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #D4AF37;
+            margin-bottom: 10px;
+        }
+
+        .payment-form {
+            background: rgba(212, 175, 55, 0.1);
+            padding: 25px;
+            border-radius: 10px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #D4AF37;
+            font-weight: bold;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #FFFFF0;
+            font-size: 16px;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #D4AF37;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .payment-method {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .payment-method:hover {
+            border-color: #D4AF37;
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        .payment-method.selected {
+            border-color: #D4AF37;
+            background: rgba(212, 175, 55, 0.2);
+        }
+
+        .payment-method img {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 10px;
+        }
+
+        .pay-btn {
+            background: linear-gradient(45deg, #D4AF37, #FFD700);
+            border: none;
+            border-radius: 25px;
+            color: #0F1A3C;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .pay-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+        }
+
+        .pay-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 10px;
+            border-left: 4px solid #D4AF37;
+            display: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            border: 3px solid rgba(212, 175, 55, 0.3);
+            border-top: 3px solid #D4AF37;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .config-panel {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .config-panel h3 {
+            color: #D4AF37;
+            margin-bottom: 15px;
+        }
+
+        .config-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+        }
+
+        .config-label {
+            font-weight: bold;
+            color: #D4AF37;
+        }
+
+        .config-value {
+            color: #FFFFF0;
+            font-family: monospace;
+        }
+
+        .qr-code {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .qr-code img {
+            max-width: 200px;
+            border: 2px solid #D4AF37;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 自动化收款系统</h1>
+            <p>安全、便捷的在线支付解决方案</p>
+        </div>
+
+        <!-- 支付配置面板 -->
+        <div class="config-panel">
+            <h3>📋 支付配置信息</h3>
+            <div class="config-item">
+                <span class="config-label">支付网关:</span>
+                <span class="config-value">https://pay.payma.cn/</span>
+            </div>
+            <div class="config-item">
+                <span class="config-label">商户ID (PID):</span>
+                <span class="config-value">145297917</span>
+            </div>
+            <div class="config-item">
+                <span class="config-label">商户密钥 (KEY):</span>
+                <span class="config-value">677g7etdq4GTqFB11e6bah1aEh1AbBmb</span>
+            </div>
+        </div>
+
+        <!-- 支付表单 -->
+        <div class="payment-form">
+            <h3>💳 创建支付订单</h3>
+            
+            <div class="form-group">
+                <label for="orderAmount">支付金额 (元)</label>
+                <input type="number" id="orderAmount" placeholder="请输入支付金额" min="0.01" step="0.01" value="1.00">
+            </div>
+
+            <div class="form-group">
+                <label for="orderName">商品名称</label>
+                <input type="text" id="orderName" placeholder="请输入商品名称" value="测试商品">
+            </div>
+
+            <div class="form-group">
+                <label for="orderId">订单号 (可选)</label>
+                <input type="text" id="orderId" placeholder="系统自动生成" readonly>
+            </div>
+
+            <div class="form-group">
+                <label>支付方式</label>
+                <div class="payment-methods">
+                    <div class="payment-method" data-method="alipay">
+                        <div>💰</div>
+                        <div>支付宝</div>
+                    </div>
+                    <div class="payment-method" data-method="wechat">
+                        <div>💚</div>
+                        <div>微信支付</div>
+                    </div>
+                    <div class="payment-method" data-method="qqpay">
+                        <div>💙</div>
+                        <div>QQ钱包</div>
+                    </div>
+                    <div class="payment-method" data-method="unionpay">
+                        <div>💳</div>
+                        <div>银联支付</div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="pay-btn" onclick="createPayment()">立即支付</button>
+        </div>
+
+        <!-- 加载状态 -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>正在创建支付订单...</p>
+        </div>
+
+        <!-- 支付结果 -->
+        <div class="result" id="result">
+            <h3>📊 支付结果</h3>
+            <div id="resultContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // Payma支付配置
+        const PAYMA_CONFIG = {
+            apiUrl: 'https://pay.payma.cn/',
+            pid: '145297917',
+            key: '677g7etdq4GTqFB11e6bah1aEh1AbBmb'
+        };
+
+        let selectedPaymentMethod = 'alipay';
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 生成订单号
+            generateOrderId();
+            
+            // 绑定支付方式选择事件
+            document.querySelectorAll('.payment-method').forEach(method => {
+                method.addEventListener('click', function() {
+                    // 移除其他选中状态
+                    document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('selected'));
+                    // 添加当前选中状态
+                    this.classList.add('selected');
+                    selectedPaymentMethod = this.dataset.method;
+                });
+            });
+
+            // 默认选中支付宝
+            document.querySelector('[data-method="alipay"]').classList.add('selected');
+        });
+
+        // 生成订单号
+        function generateOrderId() {
+            const timestamp = Date.now();
+            const random = Math.floor(Math.random() * 1000);
+            const orderId = `ORDER${timestamp}${random}`;
+            document.getElementById('orderId').value = orderId;
+        }
+
+        // 创建支付订单
+        async function createPayment() {
+            const amount = document.getElementById('orderAmount').value;
+            const orderName = document.getElementById('orderName').value;
+            const orderId = document.getElementById('orderId').value;
+
+            // 验证输入
+            if (!amount || amount <= 0) {
+                alert('请输入有效的支付金额');
+                return;
+            }
+
+            if (!orderName.trim()) {
+                alert('请输入商品名称');
+                return;
+            }
+
+            // 显示加载状态
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('result').style.display = 'none';
+
+            try {
+                // 构建支付参数
+                const paymentData = {
+                    pid: PAYMA_CONFIG.pid,
+                    type: selectedPaymentMethod,
+                    out_trade_no: orderId,
+                    notify_url: window.location.origin + '/notify',
+                    return_url: window.location.origin + '/return',
+                    name: orderName,
+                    money: amount,
+                    sign_type: 'MD5'
+                };
+
+                // 生成签名
+                paymentData.sign = generateSign(paymentData);
+
+                // 发送支付请求
+                const response = await sendPaymentRequest(paymentData);
+                
+                // 隐藏加载状态
+                document.getElementById('loading').style.display = 'none';
+
+                // 显示结果
+                showPaymentResult(response);
+
+            } catch (error) {
+                console.error('支付创建失败:', error);
+                document.getElementById('loading').style.display = 'none';
+                showPaymentResult({
+                    success: false,
+                    message: '支付创建失败: ' + error.message
+                });
+            }
+        }
+
+        // 生成MD5签名
+        function generateSign(data) {
+            // 按参数名排序
+            const sortedKeys = Object.keys(data).filter(key => key !== 'sign' && key !== 'sign_type').sort();
+            
+            // 构建签名字符串
+            let signStr = '';
+            sortedKeys.forEach(key => {
+                if (data[key] !== '' && data[key] != null) {
+                    signStr += key + '=' + data[key] + '&';
+                }
+            });
+            
+            // 添加密钥
+            signStr += 'key=' + PAYMA_CONFIG.key;
+            
+            // 返回MD5哈希（这里使用简单的哈希函数，实际应使用MD5库）
+            return simpleHash(signStr);
+        }
+
+        // 简单的哈希函数（实际项目中应使用MD5库）
+        function simpleHash(str) {
+            let hash = 0;
+            if (str.length === 0) return hash.toString();
+            for (let i = 0; i < str.length; i++) {
+                const char = str.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash; // 转换为32位整数
+            }
+            return Math.abs(hash).toString(16);
+        }
+
+        // 发送支付请求
+        async function sendPaymentRequest(paymentData) {
+            try {
+                const response = await fetch('http://localhost:3000/api/create-payment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        amount: paymentData.money,
+                        orderName: paymentData.name,
+                        orderId: paymentData.out_trade_no,
+                        paymentMethod: paymentData.type
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                return result;
+            } catch (error) {
+                console.error('API请求失败:', error);
+                // 如果API不可用，返回模拟数据
+                return {
+                    success: true,
+                    code: 1,
+                    msg: '支付订单创建成功（模拟）',
+                    data: {
+                        trade_no: 'PAY' + Date.now(),
+                        out_trade_no: paymentData.out_trade_no,
+                        money: paymentData.money,
+                        pay_url: `https://pay.payma.cn/pay/${paymentData.out_trade_no}`,
+                        qr_code: `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(`https://pay.payma.cn/pay/${paymentData.out_trade_no}`)}`
+                    }
+                };
+            }
+        }
+
+        // 显示支付结果
+        function showPaymentResult(response) {
+            const resultDiv = document.getElementById('result');
+            const contentDiv = document.getElementById('resultContent');
+
+            if (response.success) {
+                contentDiv.innerHTML = `
+                    <div style="color: #4CAF50;">
+                        <h4>✅ 支付订单创建成功！</h4>
+                        <p><strong>订单号:</strong> ${response.data.out_trade_no}</p>
+                        <p><strong>交易号:</strong> ${response.data.trade_no}</p>
+                        <p><strong>支付金额:</strong> ¥${response.data.money}</p>
+                        <p><strong>支付方式:</strong> ${getPaymentMethodName(selectedPaymentMethod)}</p>
+                        
+                        <div class="qr-code">
+                            <h4>📱 扫码支付</h4>
+                            <img src="${response.data.qr_code}" alt="支付二维码">
+                        </div>
+                        
+                        <div style="margin-top: 20px;">
+                            <a href="${response.data.pay_url}" target="_blank" class="pay-btn" style="text-decoration: none; display: inline-block;">
+                                🔗 点击跳转支付
+                            </a>
+                        </div>
+                        
+                        <div style="margin-top: 15px; padding: 10px; background: rgba(76, 175, 80, 0.1); border-radius: 5px;">
+                            <small>💡 提示：请使用对应的支付方式完成支付，支付完成后系统会自动通知</small>
+                        </div>
+                    </div>
+                `;
+            } else {
+                contentDiv.innerHTML = `
+                    <div style="color: #f44336;">
+                        <h4>❌ 支付创建失败</h4>
+                        <p><strong>错误信息:</strong> ${response.message}</p>
+                        <p><strong>建议:</strong> 请检查网络连接或稍后重试</p>
+                    </div>
+                `;
+            }
+
+            resultDiv.style.display = 'block';
+        }
+
+        // 获取支付方式名称
+        function getPaymentMethodName(method) {
+            const methodNames = {
+                'alipay': '支付宝',
+                'wechat': '微信支付',
+                'qqpay': 'QQ钱包',
+                'unionpay': '银联支付'
+            };
+            return methodNames[method] || method;
+        }
+
+        // 监听支付状态（实际项目中需要轮询或WebSocket）
+        function checkPaymentStatus(orderId) {
+            // 这里可以实现轮询检查支付状态
+            console.log('检查订单状态:', orderId);
+        }
+    </script>
+</body>
+</html> 

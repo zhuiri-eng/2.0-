@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>复选框修复测试</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #0F1A3C 0%, #1a2a5e 100%);
+            color: #FFFFF0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .test-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            color: #D4AF37;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .test-section h3 {
+            color: #D4AF37;
+            margin-bottom: 15px;
+        }
+
+        /* 改进的复选框样式 */
+        input[type="checkbox"] {
+            -webkit-appearance: none !important;
+            -moz-appearance: none !important;
+            appearance: none !important;
+            width: 20px !important;
+            height: 20px !important;
+            border: 2px solid #D4AF37 !important;
+            border-radius: 4px !important;
+            background: transparent !important;
+            position: relative !important;
+            cursor: pointer !important;
+            margin-right: 10px !important;
+            display: inline-block !important;
+            vertical-align: middle !important;
+            z-index: 1000 !important;
+            pointer-events: auto !important;
+        }
+
+        input[type="checkbox"]:checked {
+            background: #D4AF37 !important;
+            border-color: #D4AF37 !important;
+        }
+
+        input[type="checkbox"]:checked::after {
+            content: '✓' !important;
+            position: absolute !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) !important;
+            color: #0F1A3C !important;
+            font-size: 14px !important;
+            font-weight: bold !important;
+        }
+
+        .privacy-agreement {
+            display: flex !important;
+            align-items: flex-start !important;
+            gap: 10px !important;
+            margin: 20px 0 !important;
+            padding: 15px !important;
+            background: rgba(212, 175, 55, 0.1) !important;
+            border-radius: 10px !important;
+            border: 1px solid rgba(212, 175, 55, 0.3) !important;
+            position: relative !important;
+            z-index: 999 !important;
+            pointer-events: auto !important;
+        }
+
+        .privacy-agreement label {
+            flex: 1 !important;
+            line-height: 1.5 !important;
+            cursor: pointer !important;
+            pointer-events: auto !important;
+            user-select: none !important;
+            -webkit-user-select: none !important;
+            -moz-user-select: none !important;
+            -ms-user-select: none !important;
+        }
+
+        .privacy-agreement a {
+            color: #D4AF37 !important;
+            text-decoration: none !important;
+        }
+
+        .privacy-agreement a:hover {
+            text-decoration: underline !important;
+        }
+
+        #privacyAgreement {
+            opacity: 1 !important;
+            visibility: visible !important;
+            display: inline-block !important;
+            min-width: 20px !important;
+            min-height: 20px !important;
+            z-index: 1000 !important;
+            pointer-events: auto !important;
+        }
+
+        .status {
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .success {
+            color: #4CAF50;
+        }
+
+        .error {
+            color: #f44336;
+        }
+
+        .info {
+            color: #2196F3;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🔧 复选框修复测试</h1>
+        
+        <div class="test-section">
+            <h3>测试1: 基本复选框</h3>
+            <label>
+                <input type="checkbox" id="testCheckbox1">
+                基本复选框测试
+            </label>
+            <div class="status" id="status1">状态: 未选中</div>
+        </div>
+
+        <div class="test-section">
+            <h3>测试2: 隐私协议复选框（模拟主页面）</h3>
+            <div class="privacy-agreement">
+                <input type="checkbox" id="privacyAgreement" required>
+                <label for="privacyAgreement">
+                    <strong>我已阅读并同意</strong><br>
+                    <a href="#" onclick="alert('隐私协议')">《隐私协议》</a>
+                    和
+                    <a href="#" onclick="alert('服务条款')">《服务条款》</a>
+                    <br><small style="color: #D4AF37; font-size: 12px;">* 必须勾选才能继续</small>
+                </label>
+            </div>
+            <div class="status" id="status2">状态: 未选中</div>
+        </div>
+
+        <div class="test-section">
+            <h3>测试3: 多个复选框</h3>
+            <label>
+                <input type="checkbox" id="testCheckbox3">
+                选项A
+            </label><br>
+            <label>
+                <input type="checkbox" id="testCheckbox4">
+                选项B
+            </label><br>
+            <label>
+                <input type="checkbox" id="testCheckbox5">
+                选项C
+            </label>
+            <div class="status" id="status3">状态: 未选中</div>
+        </div>
+
+        <div class="test-section">
+            <h3>测试结果</h3>
+            <div id="testResults">
+                <p class="info">点击复选框测试功能...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('页面加载完成，开始初始化复选框事件...');
+            
+            // 为所有复选框添加事件监听器
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            console.log('找到复选框数量:', checkboxes.length);
+            
+            checkboxes.forEach((checkbox, index) => {
+                console.log(`初始化复选框 ${index + 1}:`, checkbox.id);
+                
+                // 点击事件
+                checkbox.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    this.checked = !this.checked;
+                    updateStatus(this);
+                    console.log(`复选框 ${this.id} 点击，状态:`, this.checked);
+                });
+                
+                // 触摸事件（移动端）
+                checkbox.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    this.checked = !this.checked;
+                    updateStatus(this);
+                    console.log(`复选框 ${this.id} 触摸，状态:`, this.checked);
+                });
+                
+                // 键盘事件
+                checkbox.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        this.checked = !this.checked;
+                        updateStatus(this);
+                        console.log(`复选框 ${this.id} 键盘操作，状态:`, this.checked);
+                    }
+                });
+            });
+            
+            // 为隐私协议标签添加点击事件
+            const privacyLabel = document.querySelector('label[for="privacyAgreement"]');
+            if (privacyLabel) {
+                console.log('找到隐私协议标签，添加点击事件');
+                privacyLabel.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const checkbox = document.getElementById('privacyAgreement');
+                    if (checkbox) {
+                        checkbox.checked = !checkbox.checked;
+                        updateStatus(checkbox);
+                        console.log('隐私协议标签点击，复选框状态:', checkbox.checked);
+                    }
+                });
+            } else {
+                console.log('未找到隐私协议标签');
+            }
+            
+            // 初始化状态显示
+            checkboxes.forEach(checkbox => {
+                updateStatus(checkbox);
+            });
+        });
+
+        function updateStatus(checkbox) {
+            const statusId = getStatusId(checkbox.id);
+            const statusElement = document.getElementById(statusId);
+            if (statusElement) {
+                statusElement.textContent = `状态: ${checkbox.checked ? '已选中' : '未选中'}`;
+                statusElement.className = `status ${checkbox.checked ? 'success' : 'info'}`;
+            }
+            
+            // 更新测试结果
+            updateTestResults();
+        }
+
+        function getStatusId(checkboxId) {
+            switch(checkboxId) {
+                case 'testCheckbox1': return 'status1';
+                case 'privacyAgreement': return 'status2';
+                case 'testCheckbox3':
+                case 'testCheckbox4':
+                case 'testCheckbox5': return 'status3';
+                default: return 'status1';
+            }
+        }
+
+        function updateTestResults() {
+            const resultsDiv = document.getElementById('testResults');
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+            const totalCount = checkboxes.length;
+            
+            let resultHtml = `<p class="info">测试进度: ${checkedCount}/${totalCount} 个复选框已选中</p>`;
+            
+            if (checkedCount === totalCount) {
+                resultHtml += '<p class="success">✅ 所有复选框测试通过！</p>';
+            } else if (checkedCount > 0) {
+                resultHtml += '<p class="info">🔄 部分复选框正常工作</p>';
+            } else {
+                resultHtml += '<p class="error">❌ 复选框可能存在问题</p>';
+            }
+            
+            resultsDiv.innerHTML = resultHtml;
+        }
+
+        // 添加一些调试信息
+        console.log('复选框修复测试页面已加载');
+    </script>
+</body>
+</html> 

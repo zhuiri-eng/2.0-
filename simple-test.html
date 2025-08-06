@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>玄机命理 - 简化测试版</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #0F1A3C 0%, #1a2a4a 100%);
+            color: #FFFFF0;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        h1 {
+            text-align: center;
+            color: #D4AF37;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #D4AF37;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #D4AF37;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #FFFFF0;
+            box-sizing: border-box;
+        }
+        button {
+            background: linear-gradient(135deg, #D4AF37, #B8860B);
+            color: #0F1A3C;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 20px;
+        }
+        button:hover {
+            background: linear-gradient(135deg, #B8860B, #D4AF37);
+        }
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 10px;
+            border: 1px solid #D4AF37;
+            display: none;
+        }
+        .loading {
+            text-align: center;
+            color: #D4AF37;
+            font-size: 18px;
+            display: none;
+        }
+        .error {
+            color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .success {
+            color: #51cf66;
+            background: rgba(81, 207, 102, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>玄机命理 - 简化测试版</h1>
+        
+        <div id="errorLog"></div>
+        
+        <form id="testForm">
+            <div class="form-group">
+                <label>姓名：</label>
+                <input type="text" id="userName" placeholder="请输入您的姓名" required>
+            </div>
+            
+            <div class="form-group">
+                <label>出生日期时间：</label>
+                <input type="datetime-local" id="birthDateTime" required>
+            </div>
+            
+            <div class="form-group">
+                <label>出生地点：</label>
+                <input type="text" id="birthPlace" placeholder="请输入出生地点" required>
+            </div>
+            
+            <div class="form-group">
+                <label>占卜问题（可选）：</label>
+                <textarea id="tarotQuestion" placeholder="请描述您想要占卜的问题..." rows="3"></textarea>
+            </div>
+            
+            <button type="submit">开始测算</button>
+        </form>
+        
+        <div id="loading" class="loading">
+            <p>正在计算中，请稍候...</p>
+        </div>
+        
+        <div id="result" class="result">
+            <h2>测算结果</h2>
+            <div id="resultContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // 错误日志
+        function logError(message) {
+            const log = document.getElementById('errorLog');
+            const time = new Date().toLocaleTimeString();
+            log.innerHTML += `<div class="error">[${time}] ${message}</div>`;
+        }
+
+        function logSuccess(message) {
+            const log = document.getElementById('errorLog');
+            const time = new Date().toLocaleTimeString();
+            log.innerHTML += `<div class="success">[${time}] ${message}</div>`;
+        }
+
+        // 全局错误捕获
+        window.addEventListener('error', function(e) {
+            logError(`JavaScript错误: ${e.message} at ${e.filename}:${e.lineno}`);
+        });
+
+        // 表单提交处理
+        document.getElementById('testForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const userName = document.getElementById('userName').value.trim();
+            const birthDateTime = document.getElementById('birthDateTime').value;
+            const birthPlace = document.getElementById('birthPlace').value.trim();
+            const tarotQuestion = document.getElementById('tarotQuestion').value.trim();
+            
+            if (!userName || !birthDateTime || !birthPlace) {
+                logError('请填写所有必填字段');
+                return;
+            }
+            
+            // 显示加载
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('result').style.display = 'none';
+            
+            // 模拟计算
+            setTimeout(() => {
+                try {
+                    const result = generateTestResult(userName, birthDateTime, birthPlace, tarotQuestion);
+                    displayResult(result);
+                    logSuccess('测算完成');
+                } catch (error) {
+                    logError('测算失败: ' + error.message);
+                } finally {
+                    document.getElementById('loading').style.display = 'none';
+                }
+            }, 2000);
+        });
+
+        // 生成测试结果
+        function generateTestResult(userName, birthDateTime, birthPlace, tarotQuestion) {
+            const birthDate = new Date(birthDateTime);
+            const formattedDate = birthDate.toLocaleString('zh-CN');
+            
+            const result = {
+                userName: userName,
+                birthTime: formattedDate,
+                birthPlace: birthPlace,
+                question: tarotQuestion,
+                bazi: generateBazi(birthDate),
+                elements: generateElements(),
+                tarot: generateTarot(),
+                advice: generateAdvice(userName)
+            };
+            
+            return result;
+        }
+
+        // 生成八字
+        function generateBazi(birthDate) {
+            const heavenlyStems = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
+            const earthlyBranches = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
+            
+            const year = birthDate.getFullYear();
+            const month = birthDate.getMonth() + 1;
+            const day = birthDate.getDate();
+            const hour = birthDate.getHours();
+            
+            return {
+                year: heavenlyStems[year % 10] + earthlyBranches[year % 12],
+                month: heavenlyStems[month % 10] + earthlyBranches[month % 12],
+                day: heavenlyStems[day % 10] + earthlyBranches[day % 12],
+                hour: heavenlyStems[hour % 10] + earthlyBranches[hour % 12]
+            };
+        }
+
+        // 生成五行
+        function generateElements() {
+            const elements = ['木', '火', '土', '金', '水'];
+            const percentages = {};
+            
+            elements.forEach(element => {
+                percentages[element] = Math.floor(Math.random() * 40) + 10;
+            });
+            
+            return percentages;
+        }
+
+        // 生成塔罗
+        function generateTarot() {
+            const cards = ['愚者', '魔术师', '女祭司', '女皇', '皇帝', '教皇', '恋人', '战车'];
+            const selectedCards = [];
+            
+            for (let i = 0; i < 3; i++) {
+                const card = cards[Math.floor(Math.random() * cards.length)];
+                selectedCards.push(card);
+            }
+            
+            return selectedCards;
+        }
+
+        // 生成建议
+        function generateAdvice(userName) {
+            const advices = [
+                `${userName}，您的命理显示您具有领导才能，适合从事管理类工作。`,
+                `${userName}，您的五行较为平衡，性格温和，适合从事服务类工作。`,
+                `${userName}，您的创造力很强，适合从事艺术或创意类工作。`,
+                `${userName}，您的分析能力突出，适合从事研究或技术类工作。`,
+                `${userName}，您的沟通能力优秀，适合从事销售或咨询类工作。`
+            ];
+            
+            return advices[Math.floor(Math.random() * advices.length)];
+        }
+
+        // 显示结果
+        function displayResult(result) {
+            const content = document.getElementById('resultContent');
+            
+            content.innerHTML = `
+                <h3>个人信息</h3>
+                <p><strong>姓名：</strong>${result.userName}</p>
+                <p><strong>出生时间：</strong>${result.birthTime}</p>
+                <p><strong>出生地点：</strong>${result.birthPlace}</p>
+                ${result.question ? `<p><strong>占卜问题：</strong>${result.question}</p>` : ''}
+                
+                <h3>八字排盘</h3>
+                <p><strong>年柱：</strong>${result.bazi.year}</p>
+                <p><strong>月柱：</strong>${result.bazi.month}</p>
+                <p><strong>日柱：</strong>${result.bazi.day}</p>
+                <p><strong>时柱：</strong>${result.bazi.hour}</p>
+                
+                <h3>五行分析</h3>
+                <p><strong>木：</strong>${result.elements.木}%</p>
+                <p><strong>火：</strong>${result.elements.火}%</p>
+                <p><strong>土：</strong>${result.elements.土}%</p>
+                <p><strong>金：</strong>${result.elements.金}%</p>
+                <p><strong>水：</strong>${result.elements.水}%</p>
+                
+                <h3>塔罗占卜</h3>
+                <p><strong>抽到的牌：</strong>${result.tarot.join('、')}</p>
+                
+                <h3>人生建议</h3>
+                <p>${result.advice}</p>
+                
+                <div style="margin-top: 20px; padding: 15px; background: rgba(255, 255, 255, 0.1); border-radius: 5px;">
+                    <p style="color: #D4AF37; font-weight: bold;">免责声明：</p>
+                    <p>本测算结果仅供娱乐参考，不构成专业建议。请理性对待，不要过度依赖。</p>
+                </div>
+            `;
+            
+            document.getElementById('result').style.display = 'block';
+        }
+
+        // 页面加载完成
+        window.addEventListener('load', function() {
+            logSuccess('页面加载完成，可以开始测试');
+        });
+    </script>
+</body>
+</html> 

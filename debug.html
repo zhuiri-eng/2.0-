@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>调试页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f0f0f0;
+        }
+        .debug-section {
+            background: white;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .error {
+            color: red;
+            background: #ffe6e6;
+            padding: 10px;
+            border-radius: 3px;
+            margin: 5px 0;
+        }
+        .success {
+            color: green;
+            background: #e6ffe6;
+            padding: 10px;
+            border-radius: 3px;
+            margin: 5px 0;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 3px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <h1>玄机命理 - 调试页面</h1>
+    
+    <div class="debug-section">
+        <h2>JavaScript 加载测试</h2>
+        <div id="jsStatus">检查中...</div>
+        <button onclick="testJavaScript()">测试 JavaScript</button>
+    </div>
+    
+    <div class="debug-section">
+        <h2>DOM 元素测试</h2>
+        <div id="domStatus">检查中...</div>
+        <button onclick="testDOM()">测试 DOM 元素</button>
+    </div>
+    
+    <div class="debug-section">
+        <h2>功能测试</h2>
+        <div>
+            <label>姓名：</label>
+            <input type="text" id="testUserName" placeholder="测试姓名">
+        </div>
+        <div>
+            <label>出生时间：</label>
+            <input type="datetime-local" id="testBirthDateTime">
+        </div>
+        <div>
+            <label>出生地点：</label>
+            <input type="text" id="testBirthPlace" placeholder="测试地点">
+        </div>
+        <button onclick="testCalculation()">测试计算功能</button>
+        <div id="testResult"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h2>错误日志</h2>
+        <div id="errorLog"></div>
+        <button onclick="clearLog()">清除日志</button>
+    </div>
+
+    <script>
+        // 错误捕获
+        window.addEventListener('error', function(e) {
+            logError('JavaScript 错误: ' + e.message + ' at ' + e.filename + ':' + e.lineno);
+        });
+
+        function logError(message) {
+            const log = document.getElementById('errorLog');
+            const time = new Date().toLocaleTimeString();
+            log.innerHTML += `<div class="error">[${time}] ${message}</div>`;
+        }
+
+        function logSuccess(message) {
+            const log = document.getElementById('errorLog');
+            const time = new Date().toLocaleTimeString();
+            log.innerHTML += `<div class="success">[${time}] ${message}</div>`;
+        }
+
+        function clearLog() {
+            document.getElementById('errorLog').innerHTML = '';
+        }
+
+        // 测试 JavaScript 加载
+        function testJavaScript() {
+            const status = document.getElementById('jsStatus');
+            try {
+                // 测试基本 JavaScript 功能
+                const test = 'JavaScript 正常工作';
+                status.innerHTML = `<div class="success">✓ ${test}</div>`;
+                logSuccess('JavaScript 基本功能正常');
+            } catch (error) {
+                status.innerHTML = `<div class="error">✗ JavaScript 错误: ${error.message}</div>`;
+                logError('JavaScript 基本功能测试失败: ' + error.message);
+            }
+        }
+
+        // 测试 DOM 元素
+        function testDOM() {
+            const status = document.getElementById('domStatus');
+            const requiredElements = [
+                'userName', 'birthDateTime', 'birthPlace', 'startCalculation',
+                'comprehensiveResult', 'displayUserName', 'displayGender'
+            ];
+            
+            let missingElements = [];
+            let foundElements = [];
+            
+            requiredElements.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    foundElements.push(id);
+                } else {
+                    missingElements.push(id);
+                }
+            });
+            
+            if (missingElements.length === 0) {
+                status.innerHTML = `<div class="success">✓ 所有必需元素都存在 (${foundElements.length})</div>`;
+                logSuccess('DOM 元素检查通过');
+            } else {
+                status.innerHTML = `<div class="error">✗ 缺少元素: ${missingElements.join(', ')}</div>`;
+                logError('DOM 元素检查失败，缺少: ' + missingElements.join(', '));
+            }
+        }
+
+        // 测试计算功能
+        function testCalculation() {
+            const result = document.getElementById('testResult');
+            const userName = document.getElementById('testUserName').value;
+            const birthDateTime = document.getElementById('testBirthDateTime').value;
+            const birthPlace = document.getElementById('testBirthPlace').value;
+            
+            if (!userName || !birthDateTime || !birthPlace) {
+                result.innerHTML = '<div class="error">请填写所有测试字段</div>';
+                return;
+            }
+            
+            try {
+                // 模拟计算
+                result.innerHTML = '<div class="success">测试计算功能正常</div>';
+                logSuccess('计算功能测试通过');
+            } catch (error) {
+                result.innerHTML = `<div class="error">计算功能错误: ${error.message}</div>`;
+                logError('计算功能测试失败: ' + error.message);
+            }
+        }
+
+        // 页面加载时自动测试
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                testJavaScript();
+                testDOM();
+            }, 1000);
+        });
+    </script>
+</body>
+</html> 

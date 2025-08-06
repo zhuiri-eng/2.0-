@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>命理综合测算 - 直接运行版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #0F1A3C 0%, #1a2a5e 100%);
+            color: #FFFFF0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            color: #D4AF37;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+            margin-bottom: 10px;
+        }
+
+        .input-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .input-section h2 {
+            color: #D4AF37;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .input-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #D4AF37;
+            font-weight: bold;
+        }
+
+        .input-group input, .input-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #D4AF37;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #FFFFF0;
+            font-size: 16px;
+        }
+
+        .input-group input:focus, .input-group textarea:focus {
+            outline: none;
+            border-color: #FFFFF0;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+
+        .gender-selector {
+            display: flex;
+            gap: 20px;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .radio-label input[type="radio"] {
+            width: auto;
+            margin: 0;
+        }
+
+        .privacy-agreement {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .privacy-agreement input[type="checkbox"] {
+            width: auto;
+        }
+
+        .privacy-agreement a {
+            color: #D4AF37;
+            text-decoration: none;
+        }
+
+        .privacy-agreement a:hover {
+            text-decoration: underline;
+        }
+
+        .calculate-btn {
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            margin: 30px auto;
+            padding: 15px 30px;
+            background: linear-gradient(45deg, #D4AF37, #FFD700);
+            border: none;
+            border-radius: 25px;
+            color: #0F1A3C;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+        }
+
+        .calculate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .results-section {
+            display: none;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .user-info {
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #D4AF37;
+        }
+
+        .user-info h3 {
+            color: #D4AF37;
+            margin-bottom: 15px;
+        }
+
+        .user-info p {
+            margin: 5px 0;
+            font-size: 16px;
+        }
+
+        .five-elements {
+            margin: 30px 0;
+        }
+
+        .five-elements h3 {
+            color: #D4AF37;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .element-item {
+            margin: 15px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .element-name {
+            font-weight: bold;
+            color: #D4AF37;
+            margin-bottom: 10px;
+        }
+
+        .progress-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 10px 0;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 1s ease;
+        }
+
+        .percentage {
+            font-weight: bold;
+            color: #D4AF37;
+            min-width: 50px;
+        }
+
+        .element-description {
+            margin-top: 10px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .report-section {
+            margin: 30px 0;
+        }
+
+        .report-section h3 {
+            color: #D4AF37;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .report-content {
+            line-height: 1.8;
+            text-align: justify;
+        }
+
+        .disclaimer {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid #ff4444;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .disclaimer h4 {
+            color: #ff4444;
+            margin-bottom: 10px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(212, 175, 55, 0.3);
+            border-top: 5px solid #D4AF37;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .form-row {
+                flex-direction: column;
+            }
+            
+            .input-group {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌟 命理综合测算 🌟</h1>
+            <p>八字 · 星座 · 塔罗 · 五行分析</p>
+        </div>
+
+        <div class="input-section">
+            <h2>个人信息输入</h2>
+            
+            <div class="form-row">
+                <div class="input-group">
+                    <label>姓名 *</label>
+                    <input type="text" id="userName" placeholder="请输入您的姓名" required>
+                </div>
+                
+                <div class="input-group">
+                    <label>性别（可选）</label>
+                    <div class="gender-selector">
+                        <label class="radio-label">
+                            <input type="radio" name="gender" value="男" class="radio-custom">
+                            <span>男</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="gender" value="女" class="radio-custom">
+                            <span>女</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="input-group">
+                    <label>出生日期时间 *</label>
+                    <input type="datetime-local" id="birthDateTime" required>
+                </div>
+                
+                <div class="input-group">
+                    <label>出生地点 *</label>
+                    <input type="text" id="birthPlace" placeholder="例如：北京市朝阳区" required>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>塔罗问题（可选）</label>
+                <textarea id="tarotQuestion" rows="3" placeholder="请输入您想咨询的问题，例如：我的事业发展如何？"></textarea>
+            </div>
+
+            <div class="privacy-agreement">
+                <input type="checkbox" id="privacyAgreement" required>
+                <label for="privacyAgreement">
+                    我已阅读并同意
+                    <a href="#" onclick="showPrivacy()">《隐私协议》</a>
+                    和
+                    <a href="#" onclick="showTerms()">《服务条款》</a>
+                </label>
+            </div>
+
+            <button class="calculate-btn" onclick="startCalculation()">开始综合测算</button>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="loading-spinner"></div>
+            <p>正在为您进行命理测算，请稍候...</p>
+        </div>
+
+        <div class="results-section" id="resultsSection">
+            <div class="user-info" id="userInfo">
+                <h3>个人信息</h3>
+                <div id="userInfoContent"></div>
+            </div>
+
+            <div class="five-elements" id="fiveElements">
+                <h3>五行能量分布分析</h3>
+                <div id="fiveElementsContent"></div>
+            </div>
+
+            <div class="report-section" id="reportSection">
+                <h3>综合命理分析报告</h3>
+                <div class="report-content" id="reportContent"></div>
+            </div>
+
+            <div class="disclaimer">
+                <h4>⚠️ 重要声明</h4>
+                <p>本测算结果仅供娱乐和参考，不构成任何专业建议。</p>
+                <p>请理性对待测算结果，不要过分依赖。</p>
+                <p>平台所有产品拒绝向未成年人提供服务，仅供娱乐和参考！</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 设置默认出生时间为当前时间
+        document.addEventListener('DOMContentLoaded', function() {
+            const now = new Date();
+            const localDateTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+            document.getElementById('birthDateTime').value = localDateTime;
+        });
+
+        function startCalculation() {
+            const userName = document.getElementById('userName').value.trim();
+            const genderElement = document.querySelector('input[name="gender"]:checked');
+            const gender = genderElement ? genderElement.value : '未选择';
+            const birthDateTime = document.getElementById('birthDateTime').value;
+            const birthPlace = document.getElementById('birthPlace').value.trim();
+            const tarotQuestion = document.getElementById('tarotQuestion').value.trim();
+            const privacyAgreement = document.getElementById('privacyAgreement').checked;
+
+            if (!userName || !birthDateTime || !birthPlace || !privacyAgreement) {
+                alert('请填写所有必填项并同意隐私协议！');
+                return;
+            }
+
+            // 显示加载状态
+            document.getElementById('loading').style.display = 'block';
+            document.querySelector('.calculate-btn').disabled = true;
+
+            // 模拟计算过程
+            setTimeout(() => {
+                displayResults(userName, gender, birthDateTime, birthPlace, tarotQuestion);
+                document.getElementById('loading').style.display = 'none';
+                document.querySelector('.calculate-btn').disabled = false;
+            }, 3000);
+        }
+
+        function displayResults(userName, gender, birthDateTime, birthPlace, tarotQuestion) {
+            // 显示用户信息
+            const userInfoContent = document.getElementById('userInfoContent');
+            userInfoContent.innerHTML = `
+                <p><strong>姓名：</strong>${userName}</p>
+                <p><strong>性别：</strong>${gender}</p>
+                <p><strong>出生时间：</strong>${formatDateTime(birthDateTime)}</p>
+                <p><strong>出生地点：</strong>${birthPlace}</p>
+                ${tarotQuestion ? `<p><strong>咨询问题：</strong>${tarotQuestion}</p>` : ''}
+            `;
+
+            // 计算五行百分比
+            const fiveElements = calculateFiveElements(userName, birthDateTime);
+            displayFiveElements(fiveElements);
+
+            // 生成综合报告
+            const report = generateReport(userName, gender, fiveElements, tarotQuestion);
+            document.getElementById('reportContent').innerHTML = report;
+
+            // 显示结果区域
+            document.getElementById('resultsSection').style.display = 'block';
+            
+            // 滚动到结果区域
+            document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function formatDateTime(dateTimeString) {
+            const date = new Date(dateTimeString);
+            return date.toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function calculateFiveElements(userName, birthDateTime) {
+            // 基于姓名和出生时间的简单五行计算
+            const nameHash = userName.split('').reduce((hash, char) => hash + char.charCodeAt(0), 0);
+            const timeHash = new Date(birthDateTime).getTime();
+            const totalHash = nameHash + timeHash;
+            
+            const elements = ['木', '火', '土', '金', '水'];
+            const percentages = [];
+            
+            for (let i = 0; i < 5; i++) {
+                const base = 15 + (totalHash % 20);
+                percentages.push(base + (i * 2));
+            }
+            
+            // 确保总和为100
+            const total = percentages.reduce((sum, p) => sum + p, 0);
+            percentages.forEach((p, i) => {
+                percentages[i] = Math.round((p / total) * 100);
+            });
+            
+            return elements.map((element, index) => ({
+                name: element,
+                percentage: percentages[index],
+                color: getElementColor(element)
+            }));
+        }
+
+        function getElementColor(element) {
+            const colors = {
+                '木': '#4CAF50',
+                '火': '#FF5722',
+                '土': '#795548',
+                '金': '#FFC107',
+                '水': '#2196F3'
+            };
+            return colors[element] || '#FFFFFF';
+        }
+
+        function displayFiveElements(elements) {
+            const content = document.getElementById('fiveElementsContent');
+            let html = '';
+            
+            elements.forEach(element => {
+                const strength = element.percentage > 25 ? '强' : element.percentage > 15 ? '中' : '弱';
+                const description = getElementDescription(element.name, strength);
+                
+                html += `
+                    <div class="element-item">
+                        <div class="element-name">${element.name}元素</div>
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${element.percentage}%; background-color: ${element.color};"></div>
+                            </div>
+                            <div class="percentage">${element.percentage}%</div>
+                        </div>
+                        <div class="element-description">${description}</div>
+                    </div>
+                `;
+            });
+            
+            content.innerHTML = html;
+        }
+
+        function getElementDescription(element, strength) {
+            const descriptions = {
+                '木': {
+                    '强': '木元素旺盛，代表您具有强大的生命力、创造力和领导能力。您善于规划，有远见卓识，适合从事管理、教育或创意工作。',
+                    '中': '木元素平衡，您性格温和，有耐心，善于协调人际关系。在团队中往往能起到调和作用。',
+                    '弱': '木元素偏弱，您可能缺乏自信，容易犹豫不决。建议多培养决断力和行动力。'
+                },
+                '火': {
+                    '强': '火元素旺盛，您热情开朗，充满活力，具有强烈的表现欲和感染力。适合从事销售、演艺或需要热情的工作。',
+                    '中': '火元素适中，您性格活泼，善于沟通，人缘较好。在社交场合中往往很受欢迎。',
+                    '弱': '火元素不足，您可能比较内向，缺乏热情。建议多参与社交活动，培养开朗的性格。'
+                },
+                '土': {
+                    '强': '土元素旺盛，您稳重踏实，责任心强，具有很好的执行力和耐力。适合从事需要耐心和细致的工作。',
+                    '中': '土元素平衡，您性格稳重，做事有条理，值得信赖。在工作和生活中都很可靠。',
+                    '弱': '土元素偏弱，您可能缺乏耐心，容易浮躁。建议培养专注力和持久力。'
+                },
+                '金': {
+                    '强': '金元素旺盛，您意志坚定，追求完美，具有强烈的正义感和原则性。适合从事法律、金融或需要公正性的工作。',
+                    '中': '金元素适中，您性格刚毅，做事认真，有原则。在团队中往往能坚持正确的方向。',
+                    '弱': '金元素不足，您可能缺乏原则性，容易妥协。建议培养坚定的意志和原则性。'
+                },
+                '水': {
+                    '强': '水元素旺盛，您聪明智慧，适应能力强，具有很好的直觉和洞察力。适合从事研究、分析或需要智慧的工作。',
+                    '中': '水元素平衡，您思维灵活，善于学习，适应能力强。在变化的环境中往往能快速适应。',
+                    '弱': '水元素偏弱，您可能思维不够灵活，学习能力有待提高。建议多学习新知识，培养思维能力。'
+                }
+            };
+            
+            return descriptions[element][strength] || '该元素在您的命理中表现一般。';
+        }
+
+        function generateReport(userName, gender, elements, tarotQuestion) {
+            const dominantElement = elements.reduce((max, element) => 
+                element.percentage > max.percentage ? element : max
+            );
+            
+            const genderText = gender === '未选择' ? '' : `作为${gender}性，`;
+            const questionText = tarotQuestion ? `关于您咨询的"${tarotQuestion}"问题，` : '';
+            
+            let report = `
+                <p><strong>${userName}，您好！</strong></p>
+                <p>${genderText}根据您的出生信息进行综合分析，${questionText}为您提供以下命理解读：</p>
+                
+                <h4>🌟 五行特质分析</h4>
+                <p>您的命理中${dominantElement.name}元素最为突出（${dominantElement.percentage}%），这决定了您的基本性格特征和人生走向。</p>
+                
+                <h4>🎯 性格特点</h4>
+                <p>您是一个${getPersonalityDescription(dominantElement.name)}的人。在人际交往中，您${getSocialDescription(dominantElement.name)}。</p>
+                
+                <h4>💼 事业发展</h4>
+                <p>在职业选择方面，您${getCareerDescription(dominantElement.name)}。建议您${getCareerAdvice(dominantElement.name)}。</p>
+                
+                <h4>❤️ 感情运势</h4>
+                <p>在感情方面，您${getLoveDescription(dominantElement.name)}。${getLoveAdvice(dominantElement.name)}</p>
+                
+                <h4>💰 财运分析</h4>
+                <p>财运方面，您${getWealthDescription(dominantElement.name)}。建议您${getWealthAdvice(dominantElement.name)}</p>
+                
+                <h4>🔮 近期运势</h4>
+                <p>近期您的运势${getRecentFortune(dominantElement.name)}。建议您${getRecentAdvice(dominantElement.name)}</p>
+                
+                <h4>✨ 开运建议</h4>
+                <p>${getLuckyAdvice(dominantElement.name)}</p>
+            `;
+            
+            return report;
+        }
+
+        function getPersonalityDescription(element) {
+            const descriptions = {
+                '木': '充满活力、富有创造力、具有领导才能',
+                '火': '热情开朗、充满激情、善于表达',
+                '土': '稳重踏实、责任心强、值得信赖',
+                '金': '意志坚定、追求完美、正义感强',
+                '水': '聪明智慧、适应能力强、思维灵活'
+            };
+            return descriptions[element] || '性格温和、平易近人';
+        }
+
+        function getSocialDescription(element) {
+            const descriptions = {
+                '木': '善于组织活动，在团队中往往担任领导角色',
+                '火': '人缘极佳，是朋友圈中的开心果',
+                '土': '可靠稳重，朋友都喜欢向您倾诉心事',
+                '金': '原则性强，朋友尊重您的正直品格',
+                '水': '思维敏捷，善于解决朋友的问题'
+            };
+            return descriptions[element] || '待人友善，容易获得他人信任';
+        }
+
+        function getCareerDescription(element) {
+            const descriptions = {
+                '木': '适合从事管理、教育、创意设计等工作',
+                '火': '适合从事销售、演艺、公关等需要热情的工作',
+                '土': '适合从事技术、工程、服务等需要耐心的工作',
+                '金': '适合从事法律、金融、审计等需要公正性的工作',
+                '水': '适合从事研究、分析、咨询等需要智慧的工作'
+            };
+            return descriptions[element] || '适合多种职业，关键是要找到自己的兴趣所在';
+        }
+
+        function getCareerAdvice(element) {
+            const advice = {
+                '木': '发挥领导才能，勇于承担责任，不断学习新知识',
+                '火': '保持热情，多与人交流，发挥沟通优势',
+                '土': '保持耐心，注重细节，培养专业技能',
+                '金': '坚持原则，追求卓越，培养专业素养',
+                '水': '多思考，多学习，发挥智慧优势'
+            };
+            return advice[element] || '保持积极心态，不断提升自己的能力';
+        }
+
+        function getLoveDescription(element) {
+            const descriptions = {
+                '木': '在感情中主动积极，喜欢主导关系发展',
+                '火': '感情丰富，容易陷入热恋，但情绪波动较大',
+                '土': '感情稳定，专一忠诚，是理想的伴侣',
+                '金': '感情理性，注重品质，追求完美的爱情',
+                '水': '感情细腻，善解人意，但有时过于敏感'
+            };
+            return descriptions[element] || '感情态度认真，重视家庭';
+        }
+
+        function getLoveAdvice(element) {
+            const advice = {
+                '木': '学会倾听伴侣的想法，不要过于强势',
+                '火': '控制情绪波动，给伴侣更多安全感',
+                '土': '继续保持专一，但也要学会表达爱意',
+                '金': '适当放松标准，学会包容伴侣的缺点',
+                '水': '增强自信，不要过分敏感，相信爱情'
+            };
+            return advice[element] || '保持真诚，用心经营感情';
+        }
+
+        function getWealthDescription(element) {
+            const descriptions = {
+                '木': '财运较好，但需要主动争取机会',
+                '火': '财运波动较大，需要控制冲动消费',
+                '土': '财运稳定，善于积累财富',
+                '金': '财运不错，但过于保守可能错失机会',
+                '水': '财运灵活，善于发现投资机会'
+            };
+            return descriptions[element] || '财运平稳，需要合理规划';
+        }
+
+        function getWealthAdvice(element) {
+            const advice = {
+                '木': '积极寻找投资机会，但要注意风险控制',
+                '火': '制定理财计划，控制消费欲望',
+                '土': '继续保持稳健的理财方式',
+                '金': '适当尝试新的投资方式，不要过于保守',
+                '水': '发挥智慧优势，寻找合适的投资机会'
+            };
+            return advice[element] || '合理规划支出，适度投资理财';
+        }
+
+        function getRecentFortune(element) {
+            const fortunes = {
+                '木': '较为顺利，适合开展新项目',
+                '火': '充满活力，人际关系良好',
+                '土': '稳定发展，适合巩固现有成果',
+                '金': '需要坚持，困难是暂时的',
+                '水': '思维清晰，适合学习新知识'
+            };
+            return fortunes[element] || '总体平稳，保持积极心态';
+        }
+
+        function getRecentAdvice(element) {
+            const advice = {
+                '木': '把握机会，勇于尝试新事物',
+                '火': '保持热情，多与朋友交流',
+                '土': '稳扎稳打，不要急于求成',
+                '金': '坚持原则，困难终将过去',
+                '水': '多思考，多学习，提升自己'
+            };
+            return advice[element] || '保持积极心态，相信未来会更好';
+        }
+
+        function getLuckyAdvice(element) {
+            const advice = {
+                '木': '多接触绿色植物，佩戴木质饰品，选择东方方位',
+                '火': '多晒太阳，佩戴红色饰品，选择南方方位',
+                '土': '多接触大地，佩戴黄色饰品，选择中央方位',
+                '金': '多接触金属物品，佩戴白色饰品，选择西方方位',
+                '水': '多接触水，佩戴蓝色饰品，选择北方方位'
+            };
+            return advice[element] || '保持积极心态，多做善事，自然会有好运';
+        }
+
+        function showPrivacy() {
+            alert('隐私协议：\n\n我们承诺保护您的个人信息安全，不会泄露给第三方。所有测算数据仅用于生成报告，不会存储或用于其他用途。');
+        }
+
+        function showTerms() {
+            alert('服务条款：\n\n本服务仅供娱乐和参考，不构成任何专业建议。用户应理性对待测算结果，不要过分依赖。平台不承担因使用本服务而产生的任何责任。');
+        }
+    </script>
+</body>
+</html> 
