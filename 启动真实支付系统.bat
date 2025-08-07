@@ -7,7 +7,7 @@ echo.
 echo 📋 支付配置信息:
 echo    - 支付网关: https://pay.payma.cn/
 echo    - 商户ID: 145297917
-echo    - 商户密钥: 677g7etdq4GTqFB11e6bah1aEh1AbBmb
+echo    - 商户密钥: AeYM3mCbR1NK420b9MZAY105yEm2ccbu
 echo.
 echo 🔧 正在启动支付API服务器...
 echo.

@@ -91,7 +91,7 @@
 const PAYMA_CONFIG = {
     apiUrl: 'https://pay.payma.cn/',
     pid: '145297917',                    // 商户ID
-    key: '677g7etdq4GTqFB11e6bah1aEh1AbBmb'  // 商户密钥
+    key: 'AeYM3mCbR1NK420b9MZAY105yEm2ccbu'  // 商户密钥
 };
 ```
 

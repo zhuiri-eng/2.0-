@@ -303,21 +303,82 @@
         const PAYMA_CONFIG = {
             apiUrl: 'https://pay.payma.cn/',
             pid: '145297917',
-            key: '677g7etdq4GTqFB11e6bah1aEh1AbBmb'
+            key: 'AeYM3mCbR1NK420b9MZAY105yEm2ccbu'
         };
 
         let selectedPaymentMethod = 'alipay';
 
         // 页面加载时初始化
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('页面加载完成,开始初始化...');
+            
+            // 检查网络连接状态
+            function checkNetworkStatus() {
+                if (!navigator.onLine) {
+                    console.warn('网络连接不可用');
+                    showNetworkWarning();
+                } else {
+                    console.log('网络连接正常');
+                    hideNetworkWarning();
+                }
+            }
+
+            // 显示网络警告
+            function showNetworkWarning() {
+                let warning = document.getElementById('network-warning');
+                if (!warning) {
+                    warning = document.createElement('div');
+                    warning.id = 'network-warning';
+                    warning.style.cssText = `
+                        position: fixed;
+                        top: 20px;
+                        right: 20px;
+                        background: #f44336;
+                        color: white;
+                        padding: 10px 15px;
+                        border-radius: 5px;
+                        z-index: 1000;
+                        font-size: 14px;
+                    `;
+                    warning.textContent = '⚠️ 网络连接不可用';
+                    document.body.appendChild(warning);
+                }
+            }
+
+            // 隐藏网络警告
+            function hideNetworkWarning() {
+                const warning = document.getElementById('network-warning');
+                if (warning) {
+                    warning.remove();
+                }
+            }
+
+            // 监听网络状态变化
+            window.addEventListener('online', function() {
+                console.log('网络连接已恢复');
+                hideNetworkWarning();
+            });
+
+            window.addEventListener('offline', function() {
+                console.log('网络连接已断开');
+                showNetworkWarning();
+            });
+
+            // 初始检查网络状态
+            checkNetworkStatus();
+
             // 绑定支付方式选择事件
             document.querySelectorAll('.payment-option').forEach(option => {
                 option.addEventListener('click', function() {
+                    console.log('复选框点击:' + this.dataset.method + ' 状态: ' + !this.classList.contains('selected'));
+                    
                     // 移除其他选中状态
                     document.querySelectorAll('.payment-option').forEach(o => o.classList.remove('selected'));
                     // 添加当前选中状态
                     this.classList.add('selected');
                     selectedPaymentMethod = this.dataset.method;
+                    
+                    console.log('隐私协议标签点击,复选框状态:' + this.classList.contains('selected'));
                 });
             });
 
@@ -338,6 +399,8 @@
             const amount = '134.00';
             const orderName = '命理测算服务';
 
+            console.log('页面加载完成,开始初始化...');
+
             // 显示加载状态
             document.getElementById('loading').style.display = 'block';
             document.getElementById('result').style.display = 'none';
@@ -355,11 +418,17 @@
                     sign_type: 'MD5'
                 };
 
+                console.log('订单号:' + orderId);
+                console.log('金额:' + amount);
+                console.log('商品名称:' + orderName);
+
                 // 生成签名
                 paymentData.sign = generateSign(paymentData);
+                console.log('支付参数:', paymentData);
+                console.log('签名:' + paymentData.sign);
 
-                // 发送支付请求
-                const response = await sendPaymentRequest(paymentData);
+                // 发送支付请求（添加重试机制）
+                const response = await sendPaymentRequestWithRetry(paymentData);
                 
                 // 隐藏加载状态
                 document.getElementById('loading').style.display = 'none';
@@ -379,76 +448,136 @@
 
         // 生成MD5签名
         function generateSign(data) {
-            // 按参数名排序
-            const sortedKeys = Object.keys(data).filter(key => key !== 'sign' && key !== 'sign_type').sort();
-            
-            // 构建签名字符串
-            let signStr = '';
-            sortedKeys.forEach(key => {
-                if (data[key] !== '' && data[key] != null) {
-                    signStr += key + '=' + data[key] + '&';
-                }
-            });
-            
-            // 添加密钥
-            signStr += 'key=' + PAYMA_CONFIG.key;
-            
-            // 返回MD5哈希（这里使用简单的哈希函数，实际应使用MD5库）
-            return simpleHash(signStr);
+            try {
+                // 按参数名排序
+                const sortedKeys = Object.keys(data).filter(key => key !== 'sign' && key !== 'sign_type').sort();
+                
+                // 构建签名字符串
+                let signStr = '';
+                sortedKeys.forEach(key => {
+                    if (data[key] !== '' && data[key] != null) {
+                        signStr += key + '=' + data[key] + '&';
+                    }
+                });
+                
+                // 添加密钥
+                signStr += 'key=' + PAYMA_CONFIG.key;
+                
+                console.log('签名字符串:', signStr);
+                
+                // 返回MD5哈希（这里使用简单的哈希函数，实际应使用MD5库）
+                return simpleHash(signStr);
+            } catch (error) {
+                console.error('生成签名失败:', error);
+                throw new Error('签名生成失败: ' + error.message);
+            }
         }
 
         // 简单的哈希函数（实际项目中应使用MD5库）
         function simpleHash(str) {
-            let hash = 0;
-            if (str.length === 0) return hash.toString();
-            for (let i = 0; i < str.length; i++) {
-                const char = str.charCodeAt(i);
-                hash = ((hash << 5) - hash) + char;
-                hash = hash & hash; // 转换为32位整数
+            try {
+                let hash = 0;
+                if (str.length === 0) return hash.toString();
+                for (let i = 0; i < str.length; i++) {
+                    const char = str.charCodeAt(i);
+                    hash = ((hash << 5) - hash) + char;
+                    hash = hash & hash; // 转换为32位整数
+                }
+                const result = Math.abs(hash).toString(16);
+                console.log('生成的哈希值:', result);
+                return result;
+            } catch (error) {
+                console.error('哈希计算失败:', error);
+                throw new Error('哈希计算失败: ' + error.message);
             }
-            return Math.abs(hash).toString(16);
         }
 
-        // 发送支付请求
-        async function sendPaymentRequest(paymentData) {
-            try {
-                // 直接跳转到Payma支付页面
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = PAYMA_CONFIG.apiUrl + 'submit.php';
-                form.target = '_blank';
-
-                // 添加支付参数
-                Object.keys(paymentData).forEach(key => {
-                    const input = document.createElement('input');
-                    input.type = 'hidden';
-                    input.name = key;
-                    input.value = paymentData[key];
-                    form.appendChild(input);
-                });
-
-                document.body.appendChild(form);
-                form.submit();
-                document.body.removeChild(form);
-
-                // 返回成功响应
-                return {
-                    success: true,
-                    code: 1,
-                    msg: '支付订单创建成功',
-                    data: {
-                        trade_no: 'PAY' + Date.now(),
-                        out_trade_no: paymentData.out_trade_no,
-                        money: paymentData.money,
-                        pay_url: PAYMA_CONFIG.apiUrl + 'submit.php',
-                        qr_code: `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(PAYMA_CONFIG.apiUrl + 'submit.php')}`
+        // 发送支付请求（带重试机制）
+        async function sendPaymentRequestWithRetry(paymentData, maxRetries = 3) {
+            for (let attempt = 1; attempt <= maxRetries; attempt++) {
+                try {
+                    console.log(`支付请求尝试 ${attempt}/${maxRetries}`);
+                    
+                    // 检查网络连接
+                    if (!navigator.onLine) {
+                        throw new Error('网络连接不可用，请检查网络设置');
                     }
-                };
 
-            } catch (error) {
-                console.error('API请求失败:', error);
-                throw error;
+                    // 使用fetch API进行预检查
+                    try {
+                        const checkResponse = await fetch(PAYMA_CONFIG.apiUrl, {
+                            method: 'HEAD',
+                            mode: 'no-cors',
+                            timeout: 5000
+                        });
+                        console.log('网络连接检查通过');
+                    } catch (checkError) {
+                        console.warn('网络连接检查失败，继续尝试支付:', checkError);
+                    }
+
+                    // 创建支付表单
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = PAYMA_CONFIG.apiUrl + 'submit.php';
+                    form.target = '_blank';
+                    form.style.display = 'none';
+
+                    // 添加支付参数
+                    Object.keys(paymentData).forEach(key => {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = key;
+                        input.value = paymentData[key];
+                        form.appendChild(input);
+                    });
+
+                    // 安全地提交表单
+                    document.body.appendChild(form);
+                    
+                    // 添加延迟确保DOM更新
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                    
+                    form.submit();
+                    
+                    // 延迟移除表单
+                    setTimeout(() => {
+                        if (document.body.contains(form)) {
+                            document.body.removeChild(form);
+                        }
+                    }, 1000);
+
+                    console.log('支付表单提交成功');
+
+                    // 返回成功响应
+                    return {
+                        success: true,
+                        code: 1,
+                        msg: '支付订单创建成功',
+                        data: {
+                            trade_no: 'PAY' + Date.now(),
+                            out_trade_no: paymentData.out_trade_no,
+                            money: paymentData.money,
+                            pay_url: PAYMA_CONFIG.apiUrl + 'submit.php',
+                            qr_code: `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(PAYMA_CONFIG.apiUrl + 'submit.php')}`
+                        }
+                    };
+
+                } catch (error) {
+                    console.error(`支付请求尝试 ${attempt} 失败:`, error);
+                    
+                    if (attempt === maxRetries) {
+                        throw new Error(`支付请求失败 (尝试 ${maxRetries} 次): ${error.message}`);
+                    }
+                    
+                    // 等待后重试
+                    await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+                }
             }
+        }
+
+        // 兼容性函数
+        async function sendPaymentRequest(paymentData) {
+            return sendPaymentRequestWithRetry(paymentData);
         }
 
         // 显示支付结果

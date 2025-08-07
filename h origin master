@@ -1,5 +1,5 @@
-[33m59caae2[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m)[m  修复订单号参数问题 - 恢复out_trade_no参数并添加调试信息
-[33m3551791[m[33m ([m[1;31morigin/master[m[33m)[m  修复Payma支付签名问题 - 尝试修正参数名称(trade_no替代out_trade_no)
+[33md633c01[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m)[m  添加详细调试信息 - 显示支付参数和签名字符串
+[33m59caae2[m[33m ([m[1;31morigin/master[m[33m)[m  修复订单号参数问题 - 恢复out_trade_no参数并添加调试信息
+[33m3551791[m  修复Payma支付签名问题 - 尝试修正参数名称(trade_no替代out_trade_no)
 [33m27aa04b[m  集成真实Payma支付系统 - 添加MD5签名验证、纯前端支付页面、部署指南和启动脚本
 [33mf5b1f17[m 添加支付弹窗功能 - 测算前显示支付页面
-[33m71fcad9[m Initial commit: 命理代码项目

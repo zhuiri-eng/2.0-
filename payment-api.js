@@ -17,7 +17,7 @@ app.use(express.static(path.join(__dirname)));
 const PAYMA_CONFIG = {
     apiUrl: 'https://pay.payma.cn/',
     pid: '145297917',
-    key: '677g7etdq4GTqFB11e6bah1aEh1AbBmb'
+    key: 'AeYM3mCbR1NK420b9MZAY105yEm2ccbu'
 };
 
 // 存储订单信息（实际项目中应使用数据库）

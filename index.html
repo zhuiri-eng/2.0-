@@ -1314,18 +1314,20 @@
             console.log('商品名称:', orderName);
 
             try {
-                            // 构建支付参数 - 恢复正确的参数名称
-            const paymentData = {
-                pid: '145297917',
-                type: selectedPaymentMethod,
-                out_trade_no: orderId,  // Payma需要 out_trade_no
-                name: orderName,
-                money: amount,
-                sign_type: 'MD5'
-            };
+                // 构建支付参数 - 恢复正确的参数名称
+                const paymentData = {
+                    pid: '145297917',
+                    type: selectedPaymentMethod,
+                    out_trade_no: orderId,  // Payma需要 out_trade_no
+                    name: orderName,
+                    money: amount,
+                    sign_type: 'MD5'
+                };
 
                 // 生成签名
+                console.log('开始生成签名...');
                 paymentData.sign = generateSign(paymentData);
+                console.log('签名生成完成:', paymentData.sign);
                 
                 // 调试信息
                 console.log('支付参数:', paymentData);
@@ -1344,26 +1346,32 @@
                         signStr += key + '=' + paymentData[key] + '&';
                     }
                 });
-                signStr += 'key=677g7etdq4GTqFB11e6bah1aEh1AbBmb';
+                signStr += 'key=AeYM3mCbR1NK420b9MZAY105yEm2ccbu';
                 console.log('签名字符串:', signStr);
+                console.log('准备创建表单...');
 
                 // 创建表单并提交到Payma
+                console.log('开始创建表单...');
                 const form = document.createElement('form');
                 form.method = 'POST';
                 form.action = 'https://pay.payma.cn/submit.php';
                 form.target = '_blank';
 
+                console.log('添加表单字段...');
                 Object.keys(paymentData).forEach(key => {
                     const input = document.createElement('input');
                     input.type = 'hidden';
                     input.name = key;
                     input.value = paymentData[key];
                     form.appendChild(input);
+                    console.log(`添加字段: ${key} = ${paymentData[key]}`);
                 });
 
+                console.log('提交表单...');
                 document.body.appendChild(form);
                 form.submit();
                 document.body.removeChild(form);
+                console.log('表单提交完成');
 
                 // 显示支付成功信息
                 paymentLoading.style.display = 'none';
@@ -1406,15 +1414,20 @@
 
         // 生成MD5签名
         function generateSign(data) {
+            console.log('generateSign函数开始执行...');
             const sortedKeys = Object.keys(data).filter(key => key !== 'sign' && key !== 'sign_type').sort();
+            console.log('排序后的键:', sortedKeys);
             let signStr = '';
             sortedKeys.forEach(key => {
                 if (data[key] !== '' && data[key] != null) {
                     signStr += key + '=' + data[key] + '&';
                 }
             });
-            signStr += 'key=677g7etdq4GTqFB11e6bah1aEh1AbBmb';
-            return md5(signStr);
+                            signStr += 'key=AeYM3mCbR1NK420b9MZAY105yEm2ccbu';
+            console.log('generateSign - 签名字符串:', signStr);
+            const result = md5(signStr);
+            console.log('generateSign - MD5结果:', result);
+            return result;
         }
 
         // MD5实现
