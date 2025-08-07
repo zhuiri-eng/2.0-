@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>命理测算 - 支付</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #0F1A3C 0%, #1a2a5e 100%);
+            color: #FFFFF0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #D4AF37;
+            margin-bottom: 10px;
+        }
+        .service-info {
+            background: rgba(212, 175, 55, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .service-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .total-section {
+            background: rgba(76, 175, 80, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .total-amount {
+            font-size: 2em;
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        .payment-methods {
+            margin-bottom: 20px;
+        }
+        .payment-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        .payment-option {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+        }
+        .payment-option.selected {
+            border-color: #D4AF37;
+            background: rgba(212, 175, 55, 0.2);
+        }
+        .pay-button {
+            background: linear-gradient(45deg, #D4AF37, #FFD700);
+            color: #0F1A3C;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔮 命理测算服务</h1>
+            <p>专业易学分析，为您的人生指引方向</p>
+        </div>
+
+        <div class="service-info">
+            <h3 style="color: #D4AF37;">📋 服务详情</h3>
+            <div class="service-item">
+                <span>八字命理分析</span>
+                <span>¥68.00</span>
+            </div>
+            <div class="service-item">
+                <span>姓名学分析</span>
+                <span>¥38.00</span>
+            </div>
+            <div class="service-item">
+                <span>流年运势预测</span>
+                <span>¥28.00</span>
+            </div>
+        </div>
+
+        <div class="total-section">
+            <div>总计金额</div>
+            <div class="total-amount">¥134.00</div>
+        </div>
+
+        <div class="payment-methods">
+            <h3 style="color: #D4AF37;">💳 选择支付方式</h3>
+            <div class="payment-options">
+                <div class="payment-option selected" data-method="alipay">
+                    <div style="font-size: 2em;">💰</div>
+                    <div>支付宝</div>
+                </div>
+                <div class="payment-option" data-method="wechat">
+                    <div style="font-size: 2em;">💚</div>
+                    <div>微信支付</div>
+                </div>
+            </div>
+        </div>
+
+        <button class="pay-button" onclick="createPayment()">🚀 立即支付 ¥134.00</button>
+        
+        <div class="result" id="result">
+            <div id="resultContent"></div>
+        </div>
+    </div>
+
+    <script>
+        let selectedPaymentMethod = 'alipay';
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.payment-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    document.querySelectorAll('.payment-option').forEach(o => o.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedPaymentMethod = this.dataset.method;
+                });
+            });
+        });
+
+        function generateOrderId() {
+            const timestamp = Date.now();
+            const random = Math.floor(Math.random() * 1000);
+            return `ML${timestamp}${random}`;
+        }
+
+        async function createPayment() {
+            const orderId = generateOrderId();
+            const amount = '134.00';
+            const orderName = '命理测算服务';
+
+            try {
+                // 构建支付参数
+                const paymentData = {
+                    pid: '145297917',
+                    type: selectedPaymentMethod,
+                    out_trade_no: orderId,
+                    notify_url: window.location.origin + '/api/payment-notify',
+                    return_url: window.location.origin + '/api/payment-return',
+                    name: orderName,
+                    money: amount,
+                    sign_type: 'MD5'
+                };
+
+                // 生成签名
+                paymentData.sign = generateSign(paymentData);
+
+                // 创建表单并提交
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = 'https://pay.payma.cn/submit.php';
+                form.target = '_blank';
+
+                Object.keys(paymentData).forEach(key => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = key;
+                    input.value = paymentData[key];
+                    form.appendChild(input);
+                });
+
+                document.body.appendChild(form);
+                form.submit();
+                document.body.removeChild(form);
+
+                showPaymentResult({
+                    success: true,
+                    message: '支付订单创建成功，正在跳转到支付页面...'
+                });
+
+            } catch (error) {
+                showPaymentResult({
+                    success: false,
+                    message: '支付创建失败: ' + error.message
+                });
+            }
+        }
+
+        function generateSign(data) {
+            const sortedKeys = Object.keys(data).filter(key => key !== 'sign' && key !== 'sign_type').sort();
+            let signStr = '';
+            sortedKeys.forEach(key => {
+                if (data[key] !== '' && data[key] != null) {
+                    signStr += key + '=' + data[key] + '&';
+                }
+            });
+            signStr += 'key=677g7etdq4GTqFB11e6bah1aEh1AbBmb';
+            return simpleHash(signStr);
+        }
+
+        function simpleHash(str) {
+            let hash = 0;
+            if (str.length === 0) return hash.toString();
+            for (let i = 0; i < str.length; i++) {
+                const char = str.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+            return Math.abs(hash).toString(16);
+        }
+
+        function showPaymentResult(response) {
+            const resultDiv = document.getElementById('result');
+            const contentDiv = document.getElementById('resultContent');
+
+            if (response.success) {
+                contentDiv.innerHTML = `
+                    <h3 style="color: #4CAF50;">✅ ${response.message}</h3>
+                    <p>请在新窗口中完成支付，支付完成后请关闭支付窗口。</p>
+                `;
+            } else {
+                contentDiv.innerHTML = `
+                    <h3 style="color: #f44336;">❌ ${response.message}</h3>
+                `;
+            }
+
+            resultDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html> 

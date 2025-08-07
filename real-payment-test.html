@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>真实支付测试 - Payma</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #0F1A3C 0%, #1a2a5e 100%);
+            color: #FFFFF0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #D4AF37;
+            font-weight: bold;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #FFFFF0;
+            font-size: 16px;
+        }
+        .pay-btn {
+            background: linear-gradient(45deg, #D4AF37, #FFD700);
+            border: none;
+            border-radius: 25px;
+            color: #0F1A3C;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔗 真实支付API测试</h1>
+        <p>Payma支付接口对接测试</p>
+        
+        <div class="form-group">
+            <label for="orderAmount">支付金额 (元)</label>
+            <input type="number" id="orderAmount" value="0.01" min="0.01" step="0.01">
+        </div>
+
+        <div class="form-group">
+            <label for="orderName">商品名称</label>
+            <input type="text" id="orderName" value="API测试商品">
+        </div>
+
+        <div class="form-group">
+            <label for="orderId">订单号</label>
+            <input type="text" id="orderId" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="paymentMethod">支付方式</label>
+            <select id="paymentMethod">
+                <option value="alipay">支付宝</option>
+                <option value="wechat">微信支付</option>
+                <option value="qqpay">QQ钱包</option>
+                <option value="unionpay">银联支付</option>
+            </select>
+        </div>
+
+        <button class="pay-btn" onclick="createPayment()">🚀 创建真实支付</button>
+        
+        <div class="result" id="result">
+            <div id="resultContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // 生成订单号
+        function generateOrderId() {
+            const timestamp = Date.now();
+            const random = Math.floor(Math.random() * 1000);
+            return `TEST${timestamp}${random}`;
+        }
+
+        // 页面加载时生成订单号
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('orderId').value = generateOrderId();
+        });
+
+        // 创建支付订单
+        async function createPayment() {
+            const amount = document.getElementById('orderAmount').value;
+            const orderName = document.getElementById('orderName').value;
+            const orderId = document.getElementById('orderId').value;
+            const paymentMethod = document.getElementById('paymentMethod').value;
+
+            if (!amount || amount <= 0) {
+                alert('请输入有效的支付金额');
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:3000/api/create-payment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        amount: amount,
+                        orderName: orderName,
+                        orderId: orderId,
+                        paymentMethod: paymentMethod
+                    })
+                });
+
+                const result = await response.json();
+                showResult(result);
+
+            } catch (error) {
+                showResult({
+                    success: false,
+                    message: '支付创建失败: ' + error.message
+                });
+            }
+        }
+
+        // 显示结果
+        function showResult(response) {
+            const resultDiv = document.getElementById('result');
+            const contentDiv = document.getElementById('resultContent');
+
+            if (response.success) {
+                contentDiv.innerHTML = `
+                    <h3 style="color: #4CAF50;">✅ 支付订单创建成功！</h3>
+                    <p><strong>订单号:</strong> ${response.data.out_trade_no}</p>
+                    <p><strong>交易号:</strong> ${response.data.trade_no}</p>
+                    <p><strong>支付金额:</strong> ¥${response.data.money}</p>
+                    <p><strong>支付链接:</strong> <a href="${response.data.pay_url}" target="_blank" style="color: #D4AF37;">点击跳转支付</a></p>
+                `;
+            } else {
+                contentDiv.innerHTML = `
+                    <h3 style="color: #f44336;">❌ 支付创建失败</h3>
+                    <p><strong>错误信息:</strong> ${response.message}</p>
+                `;
+            }
+
+            resultDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html> 

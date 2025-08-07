@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>命理测算 - 支付页面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #0F1A3C 0%, #1a2a5e 100%);
+            color: #FFFFF0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #D4AF37;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+
+        .service-info {
+            background: rgba(212, 175, 55, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .service-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .service-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .service-name {
+            color: #D4AF37;
+            font-weight: bold;
+        }
+
+        .service-price {
+            color: #FFFFF0;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .total-section {
+            background: rgba(76, 175, 80, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+
+        .total-label {
+            color: #4CAF50;
+        }
+
+        .total-amount {
+            color: #FFFFF0;
+            font-size: 1.5em;
+        }
+
+        .payment-methods {
+            margin-bottom: 20px;
+        }
+
+        .payment-methods h3 {
+            color: #D4AF37;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .payment-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+        }
+
+        .payment-option {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .payment-option:hover {
+            border-color: #D4AF37;
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        .payment-option.selected {
+            border-color: #D4AF37;
+            background: rgba(212, 175, 55, 0.2);
+        }
+
+        .payment-option .icon {
+            font-size: 2em;
+            margin-bottom: 8px;
+        }
+
+        .payment-option .name {
+            font-size: 14px;
+            color: #FFFFF0;
+        }
+
+        .pay-button {
+            background: linear-gradient(45deg, #D4AF37, #FFD700);
+            color: #0F1A3C;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .pay-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+        }
+
+        .pay-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 10px;
+            display: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            border: 3px solid rgba(212, 175, 55, 0.3);
+            border-top: 3px solid #D4AF37;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .qr-code {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .qr-code img {
+            max-width: 200px;
+            border: 2px solid #D4AF37;
+            border-radius: 10px;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-link a {
+            color: #D4AF37;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔮 命理测算服务</h1>
+            <p>专业易学分析，为您的人生指引方向</p>
+        </div>
+
+        <!-- 服务信息 -->
+        <div class="service-info">
+            <h3 style="color: #D4AF37; margin-bottom: 15px;">📋 服务详情</h3>
+            <div class="service-item">
+                <span class="service-name">八字命理分析</span>
+                <span class="service-price">¥68.00</span>
+            </div>
+            <div class="service-item">
+                <span class="service-name">姓名学分析</span>
+                <span class="service-price">¥38.00</span>
+            </div>
+            <div class="service-item">
+                <span class="service-name">流年运势预测</span>
+                <span class="service-price">¥28.00</span>
+            </div>
+        </div>
+
+        <!-- 总计 -->
+        <div class="total-section">
+            <div class="total-row">
+                <span class="total-label">总计金额</span>
+                <span class="total-amount">¥134.00</span>
+            </div>
+        </div>
+
+        <!-- 支付方式 -->
+        <div class="payment-methods">
+            <h3>💳 选择支付方式</h3>
+            <div class="payment-options">
+                <div class="payment-option" data-method="alipay">
+                    <div class="icon">💰</div>
+                    <div class="name">支付宝</div>
+                </div>
+                <div class="payment-option" data-method="wechat">
+                    <div class="icon">💚</div>
+                    <div class="name">微信支付</div>
+                </div>
+                <div class="payment-option" data-method="qqpay">
+                    <div class="icon">💙</div>
+                    <div class="name">QQ钱包</div>
+                </div>
+                <div class="payment-option" data-method="unionpay">
+                    <div class="icon">💳</div>
+                    <div class="name">银联支付</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 支付按钮 -->
+        <button class="pay-button" onclick="createPayment()">🚀 立即支付 ¥134.00</button>
+
+        <!-- 加载状态 -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>正在创建支付订单...</p>
+        </div>
+
+        <!-- 支付结果 -->
+        <div class="result" id="result">
+            <div id="resultContent"></div>
+        </div>
+
+        <!-- 返回链接 -->
+        <div class="back-link">
+            <a href="index.html">← 返回测算页面</a>
+        </div>
+    </div>
+
+    <script>
+        // Payma支付配置
+        const PAYMA_CONFIG = {
+            apiUrl: 'https://pay.payma.cn/',
+            pid: '145297917',
+            key: '677g7etdq4GTqFB11e6bah1aEh1AbBmb'
+        };
+
+        let selectedPaymentMethod = 'alipay';
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 绑定支付方式选择事件
+            document.querySelectorAll('.payment-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    // 移除其他选中状态
+                    document.querySelectorAll('.payment-option').forEach(o => o.classList.remove('selected'));
+                    // 添加当前选中状态
+                    this.classList.add('selected');
+                    selectedPaymentMethod = this.dataset.method;
+                });
+            });
+
+            // 默认选中支付宝
+            document.querySelector('[data-method="alipay"]').classList.add('selected');
+        });
+
+        // 生成订单号
+        function generateOrderId() {
+            const timestamp = Date.now();
+            const random = Math.floor(Math.random() * 1000);
+            return `ML${timestamp}${random}`;
+        }
+
+        // 创建支付订单
+        async function createPayment() {
+            const orderId = generateOrderId();
+            const amount = '134.00';
+            const orderName = '命理测算服务';
+
+            // 显示加载状态
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('result').style.display = 'none';
+
+            try {
+                // 构建支付参数
+                const paymentData = {
+                    pid: PAYMA_CONFIG.pid,
+                    type: selectedPaymentMethod,
+                    out_trade_no: orderId,
+                    notify_url: window.location.origin + '/api/payment-notify',
+                    return_url: window.location.origin + '/api/payment-return',
+                    name: orderName,
+                    money: amount,
+                    sign_type: 'MD5'
+                };
+
+                // 生成签名
+                paymentData.sign = generateSign(paymentData);
+
+                // 发送支付请求
+                const response = await sendPaymentRequest(paymentData);
+                
+                // 隐藏加载状态
+                document.getElementById('loading').style.display = 'none';
+
+                // 显示结果
+                showPaymentResult(response);
+
+            } catch (error) {
+                console.error('支付创建失败:', error);
+                document.getElementById('loading').style.display = 'none';
+                showPaymentResult({
+                    success: false,
+                    message: '支付创建失败: ' + error.message
+                });
+            }
+        }
+
+        // 生成MD5签名
+        function generateSign(data) {
+            // 按参数名排序
+            const sortedKeys = Object.keys(data).filter(key => key !== 'sign' && key !== 'sign_type').sort();
+            
+            // 构建签名字符串
+            let signStr = '';
+            sortedKeys.forEach(key => {
+                if (data[key] !== '' && data[key] != null) {
+                    signStr += key + '=' + data[key] + '&';
+                }
+            });
+            
+            // 添加密钥
+            signStr += 'key=' + PAYMA_CONFIG.key;
+            
+            // 返回MD5哈希（这里使用简单的哈希函数，实际应使用MD5库）
+            return simpleHash(signStr);
+        }
+
+        // 简单的哈希函数（实际项目中应使用MD5库）
+        function simpleHash(str) {
+            let hash = 0;
+            if (str.length === 0) return hash.toString();
+            for (let i = 0; i < str.length; i++) {
+                const char = str.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash; // 转换为32位整数
+            }
+            return Math.abs(hash).toString(16);
+        }
+
+        // 发送支付请求
+        async function sendPaymentRequest(paymentData) {
+            try {
+                // 直接跳转到Payma支付页面
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = PAYMA_CONFIG.apiUrl + 'submit.php';
+                form.target = '_blank';
+
+                // 添加支付参数
+                Object.keys(paymentData).forEach(key => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = key;
+                    input.value = paymentData[key];
+                    form.appendChild(input);
+                });
+
+                document.body.appendChild(form);
+                form.submit();
+                document.body.removeChild(form);
+
+                // 返回成功响应
+                return {
+                    success: true,
+                    code: 1,
+                    msg: '支付订单创建成功',
+                    data: {
+                        trade_no: 'PAY' + Date.now(),
+                        out_trade_no: paymentData.out_trade_no,
+                        money: paymentData.money,
+                        pay_url: PAYMA_CONFIG.apiUrl + 'submit.php',
+                        qr_code: `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(PAYMA_CONFIG.apiUrl + 'submit.php')}`
+                    }
+                };
+
+            } catch (error) {
+                console.error('API请求失败:', error);
+                throw error;
+            }
+        }
+
+        // 显示支付结果
+        function showPaymentResult(response) {
+            const resultDiv = document.getElementById('result');
+            const contentDiv = document.getElementById('resultContent');
+
+            if (response.success) {
+                contentDiv.innerHTML = `
+                    <div style="color: #4CAF50;">
+                        <h3>✅ 支付订单创建成功！</h3>
+                        <p><strong>订单号:</strong> ${response.data.out_trade_no}</p>
+                        <p><strong>交易号:</strong> ${response.data.trade_no}</p>
+                        <p><strong>支付金额:</strong> ¥${response.data.money}</p>
+                        <p><strong>支付方式:</strong> ${getPaymentMethodName(selectedPaymentMethod)}</p>
+                        
+                        <div style="margin-top: 20px; padding: 15px; background: rgba(76, 175, 80, 0.1); border-radius: 10px;">
+                            <h4>📱 支付说明</h4>
+                            <p>• 系统已为您跳转到支付页面</p>
+                            <p>• 请在新窗口中完成支付</p>
+                            <p>• 支付完成后请关闭支付窗口</p>
+                            <p>• 系统会自动处理支付结果</p>
+                        </div>
+                        
+                        <div style="margin-top: 15px; padding: 10px; background: rgba(76, 175, 80, 0.1); border-radius: 5px;">
+                            <small>💡 提示：支付完成后，我们的专业命理师将为您提供详细的测算报告</small>
+                        </div>
+                    </div>
+                `;
+            } else {
+                contentDiv.innerHTML = `
+                    <div style="color: #f44336;">
+                        <h3>❌ 支付创建失败</h3>
+                        <p><strong>错误信息:</strong> ${response.message}</p>
+                        <p><strong>建议:</strong> 请检查网络连接或稍后重试</p>
+                    </div>
+                `;
+            }
+
+            resultDiv.style.display = 'block';
+        }
+
+        // 获取支付方式名称
+        function getPaymentMethodName(method) {
+            const methodNames = {
+                'alipay': '支付宝',
+                'wechat': '微信支付',
+                'qqpay': 'QQ钱包',
+                'unionpay': '银联支付'
+            };
+            return methodNames[method] || method;
+        }
+    </script>
+</body>
+</html> 

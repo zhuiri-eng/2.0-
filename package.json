@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node payment-api.js",
     "dev": "nodemon payment-api.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node test-payment-api.js"
   },
   "keywords": [
     "payment",
