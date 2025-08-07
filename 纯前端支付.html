@@ -442,7 +442,7 @@
                 const paymentData = {
                     pid: '145297917',
                     type: selectedPaymentMethod,
-                    trade_no: orderId,  // 尝试 trade_no 而不是 out_trade_no
+                    out_trade_no: orderId,  // Payma需要 out_trade_no
                     name: orderName,
                     money: amount,
                     sign_type: 'MD5'

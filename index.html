@@ -1307,13 +1307,18 @@
             const orderId = generateOrderId();
             const amount = '29.90';
             const orderName = '命理测算服务';
+            
+            // 调试信息
+            console.log('订单号:', orderId);
+            console.log('金额:', amount);
+            console.log('商品名称:', orderName);
 
             try {
-                            // 构建支付参数 - 尝试修正参数名称
+                            // 构建支付参数 - 恢复正确的参数名称
             const paymentData = {
                 pid: '145297917',
                 type: selectedPaymentMethod,
-                trade_no: orderId,  // 尝试 trade_no 而不是 out_trade_no
+                out_trade_no: orderId,  // Payma需要 out_trade_no
                 name: orderName,
                 money: amount,
                 sign_type: 'MD5'
@@ -1321,6 +1326,10 @@
 
                 // 生成签名
                 paymentData.sign = generateSign(paymentData);
+                
+                // 调试信息
+                console.log('支付参数:', paymentData);
+                console.log('签名:', paymentData.sign);
 
                 // 创建表单并提交到Payma
                 const form = document.createElement('form');
