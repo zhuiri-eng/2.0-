@@ -1330,6 +1330,22 @@
                 // 调试信息
                 console.log('支付参数:', paymentData);
                 console.log('签名:', paymentData.sign);
+                
+                // 详细调试信息
+                console.log('=== 详细支付参数 ===');
+                Object.keys(paymentData).forEach(key => {
+                    console.log(`${key}: ${paymentData[key]}`);
+                });
+                console.log('=== 签名字符串 ===');
+                const sortedKeys = Object.keys(paymentData).filter(key => key !== 'sign' && key !== 'sign_type').sort();
+                let signStr = '';
+                sortedKeys.forEach(key => {
+                    if (paymentData[key] !== '' && paymentData[key] != null) {
+                        signStr += key + '=' + paymentData[key] + '&';
+                    }
+                });
+                signStr += 'key=677g7etdq4GTqFB11e6bah1aEh1AbBmb';
+                console.log('签名字符串:', signStr);
 
                 // 创建表单并提交到Payma
                 const form = document.createElement('form');
