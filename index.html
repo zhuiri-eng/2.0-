@@ -1309,17 +1309,15 @@
             const orderName = '命理测算服务';
 
             try {
-                // 构建支付参数
-                const paymentData = {
-                    pid: '145297917',
-                    type: selectedPaymentMethod,
-                    out_trade_no: orderId,
-                    notify_url: window.location.origin + '/api/payment-notify',
-                    return_url: window.location.origin + '/api/payment-return',
-                    name: orderName,
-                    money: amount,
-                    sign_type: 'MD5'
-                };
+                            // 构建支付参数 - 尝试修正参数名称
+            const paymentData = {
+                pid: '145297917',
+                type: selectedPaymentMethod,
+                trade_no: orderId,  // 尝试 trade_no 而不是 out_trade_no
+                name: orderName,
+                money: amount,
+                sign_type: 'MD5'
+            };
 
                 // 生成签名
                 paymentData.sign = generateSign(paymentData);

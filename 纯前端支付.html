@@ -442,9 +442,7 @@
                 const paymentData = {
                     pid: '145297917',
                     type: selectedPaymentMethod,
-                    out_trade_no: orderId,
-                    notify_url: window.location.origin + '/api/payment-notify',
-                    return_url: window.location.origin + '/payment-callback.html',
+                    trade_no: orderId,  // 尝试 trade_no 而不是 out_trade_no
                     name: orderName,
                     money: amount,
                     sign_type: 'MD5'
